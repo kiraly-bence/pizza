@@ -140,4 +140,61 @@ class ProductTest extends TestCase
 
         Storage::disk('public')->assertMissing('products/old.jpg');
     }
+
+    public function test_admin_can_create_product_with_original_price(): void
+    {
+        $admin    = User::factory()->admin()->create();
+        $category = Category::factory()->create();
+
+        $this->actingAs($admin)->post('/admin/products', $this->productPayload($category->id, [
+            'price'          => 2450,
+            'original_price' => 2900,
+        ]));
+
+        $this->assertDatabaseHas('products', [
+            'price'          => 2450,
+            'original_price' => 2900,
+        ]);
+    }
+
+    public function test_original_price_must_be_greater_than_price(): void
+    {
+        $admin    = User::factory()->admin()->create();
+        $category = Category::factory()->create();
+
+        $response = $this->actingAs($admin)->post('/admin/products', $this->productPayload($category->id, [
+            'price'          => 2900,
+            'original_price' => 2450,
+        ]));
+
+        $response->assertSessionHasErrors('original_price');
+    }
+
+    public function test_original_price_can_be_null(): void
+    {
+        $admin    = User::factory()->admin()->create();
+        $category = Category::factory()->create();
+
+        $this->actingAs($admin)->post('/admin/products', $this->productPayload($category->id, [
+            'price'          => 2450,
+            'original_price' => null,
+        ]));
+
+        $product = Product::first();
+        $this->assertNull($product->original_price);
+    }
+
+    public function test_admin_can_remove_discount_by_setting_original_price_to_null(): void
+    {
+        $admin    = User::factory()->admin()->create();
+        $product  = Product::factory()->create(['price' => 2450, 'original_price' => 2900]);
+        $category = Category::factory()->create();
+
+        $this->actingAs($admin)->patch("/admin/products/{$product->id}", $this->productPayload($category->id, [
+            'price'          => 2450,
+            'original_price' => null,
+        ]));
+
+        $this->assertNull($product->fresh()->original_price);
+    }
 }

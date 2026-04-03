@@ -40,7 +40,10 @@
                                 <div class="card-body d-flex flex-column">
                                     <div class="d-flex justify-content-between align-items-start mb-1">
                                         <h5 class="card-title pizza-name mb-0">{{ product.name }}</h5>
-                                        <span class="pizza-price">{{ formatPrice(product.price) }} Ft</span>
+                                        <span class="pizza-price">
+                                            <span v-if="product.original_price" class="pizza-price-original">{{ formatPrice(product.original_price) }} Ft</span>
+                                            {{ formatPrice(product.price) }} Ft
+                                        </span>
                                     </div>
                                     <p class="card-text pizza-desc flex-grow-1">{{ product.description }}</p>
                                     <div class="pizza-tags mt-2">
@@ -94,7 +97,10 @@
 
                                 <div class="mt-auto">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="modal-price">{{ formatPrice(selectedProduct.price) }} Ft</span>
+                                        <span class="modal-price">
+                                            <span v-if="selectedProduct.original_price" class="modal-price-original">{{ formatPrice(selectedProduct.original_price) }} Ft</span>
+                                            {{ formatPrice(selectedProduct.price) }} Ft
+                                        </span>
                                     </div>
                                     <button class="btn add-to-cart-btn w-100" @click="addToCart(selectedProduct)">
                                         🛒 Hozzáadás a kosárhoz
@@ -255,6 +261,10 @@ const formatPrice = (price) =>
     font-weight: 700;
     color: #e63946;
     white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
     margin-left: 8px;
 }
 
@@ -333,10 +343,27 @@ const formatPrice = (price) =>
     border-radius: 20px;
 }
 
+.pizza-price-original {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: #aaa;
+    text-decoration: line-through;
+}
+
 .modal-price {
     font-size: 1.4rem;
     font-weight: 700;
     color: #e63946;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.modal-price-original {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #aaa;
+    text-decoration: line-through;
 }
 
 .add-to-cart-btn {
