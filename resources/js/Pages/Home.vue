@@ -112,6 +112,7 @@
 <script setup>
 import { ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { Modal } from 'bootstrap'
 
 defineProps({
     auth: {
@@ -131,8 +132,7 @@ const selectedProduct = ref(null)
 const openModal = (product) => {
     selectedProduct.value = product
     const el = document.getElementById('productModal')
-    const modal = window.bootstrap.Modal.getOrCreateInstance(el)
-    modal.show()
+    Modal.getOrCreateInstance(el).show()
 }
 
 const primaryLabels = (product) =>

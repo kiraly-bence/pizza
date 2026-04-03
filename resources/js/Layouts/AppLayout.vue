@@ -178,21 +178,41 @@
 
                         <!-- Forgot password -->
                         <div v-else-if="authTab === 'forgot'">
-                            <div class="forgot-info">
-                                <div class="forgot-icon">🔒</div>
+                            <div v-if="forgotSent" class="text-center py-3">
+                                <div class="forgot-icon">📧</div>
                                 <p class="forgot-text">
-                                    Ha elfelejtette jelszavát, kérjük vegye fel a kapcsolatot az adminisztrátorral az alábbi e-mail címen:
+                                    Ha ez az e-mail cím regisztrált nálunk, hamarosan megérkezik a jelszó-visszaállítási hivatkozás.
                                 </p>
-                                <a href="mailto:admin@pizzarex.hu" class="forgot-email">
-                                    admin@pizzarex.hu
-                                </a>
-                                <p class="forgot-subtext">
-                                    Jelezze a regisztrált e-mail címét és kollégáink hamarosan segítenek.
-                                </p>
+                                <button class="btn w-100 submit-btn mt-2" @click="switchTab('login')">
+                                    Vissza a bejelentkezéshez
+                                </button>
                             </div>
-                            <button class="btn w-100 submit-btn mt-3" @click="switchTab('login')">
-                                Vissza a bejelentkezéshez
-                            </button>
+                            <div v-else>
+                                <p class="forgot-text mb-3">
+                                    Add meg a fiókodhoz tartozó e-mail címet, és küldünk egy visszaállítási hivatkozást.
+                                </p>
+                                <div v-if="forgotForm.errors.email" class="alert alert-danger py-2 small mb-3">
+                                    {{ forgotForm.errors.email }}
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">E-mail cím</label>
+                                    <input
+                                        v-model="forgotForm.email"
+                                        type="email"
+                                        class="form-control"
+                                        :class="{ 'is-invalid': forgotForm.errors.email }"
+                                        placeholder="pelda@email.hu"
+                                        @keyup.enter="submitForgot"
+                                    >
+                                </div>
+                                <button
+                                    class="btn w-100 submit-btn"
+                                    :disabled="forgotForm.processing"
+                                    @click="submitForgot"
+                                >
+                                    {{ forgotForm.processing ? 'Küldés...' : 'Hivatkozás küldése' }}
+                                </button>
+                            </div>
                         </div>
 
                     </div>
@@ -210,7 +230,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useForm, router } from '@inertiajs/vue3'
+import { useForm, router, usePage } from '@inertiajs/vue3'
 
 const props = defineProps({
     auth: {
@@ -219,12 +239,15 @@ const props = defineProps({
     }
 })
 
+const page = usePage()
 const authTab = ref('login')
+const forgotSent = computed(() => page.props.flash?.forgot_status === 'sent')
 
 const switchTab = (tab) => {
     authTab.value = tab
     loginForm.clearErrors()
     registerForm.clearErrors()
+    forgotForm.clearErrors()
 }
 
 const initials = computed(() => {
@@ -257,6 +280,13 @@ const registerForm = useForm({
 
 const submitRegister = () => {
     registerForm.post('/register')
+}
+
+// Forgot password
+const forgotForm = useForm({ email: '' })
+
+const submitForgot = () => {
+    forgotForm.post('/forgot-password')
 }
 
 // Logout
