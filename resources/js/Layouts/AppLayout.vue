@@ -8,6 +8,10 @@
                 </a>
 
                 <div class="ms-auto d-flex align-items-center gap-3">
+                    <button class="btn cart-btn" @click="openCart">
+                        🛒
+                        <span class="cart-count" v-if="cartCount > 0">{{ cartCount }}</span>
+                    </button>
                     <template v-if="auth && auth.user">
                         <div class="dropdown">
                             <button
@@ -220,6 +224,51 @@
             </div>
         </div>
 
+        <!-- Cart sidebar -->
+        <transition name="cart-slide">
+            <div v-if="cartOpen" class="cart-sidebar">
+                <div class="cart-header">
+                    <span class="cart-title">Kosár</span>
+                    <button class="btn-close btn-close-white" @click="closeCart"></button>
+                </div>
+
+                <div class="cart-body" v-if="cartItems.length > 0">
+                    <div class="cart-item" v-for="item in cartItems" :key="item.id">
+                        <img
+                            :src="item.image ?? 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=60'"
+                            :alt="item.name"
+                            class="cart-item-img"
+                        >
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">{{ item.name }}</div>
+                            <div class="cart-item-price">{{ formatPrice(item.price) }} Ft</div>
+                        </div>
+                        <div class="cart-item-actions">
+                            <button class="qty-btn" @click="updateQuantity(item.id, item.quantity - 1)">−</button>
+                            <span class="qty-val">{{ item.quantity }}</span>
+                            <button class="qty-btn" @click="updateQuantity(item.id, item.quantity + 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cart-empty" v-else>
+                    <div class="cart-empty-icon">🛒</div>
+                    <p>A kosár üres</p>
+                </div>
+
+                <div class="cart-footer" v-if="cartItems.length > 0">
+                    <div class="cart-total">
+                        <span>Összesen:</span>
+                        <span class="cart-total-price">{{ formatPrice(cartTotal) }} Ft</span>
+                    </div>
+                    <button class="btn w-100 submit-btn mt-3">Megrendelés →</button>
+                </div>
+            </div>
+        </transition>
+        <transition name="overlay-fade">
+            <div v-if="cartOpen" class="cart-overlay" @click="closeCart"></div>
+        </transition>
+
         <footer class="site-footer">
             <div class="container text-center">
                 <p class="mb-0">© 2026 PizzaRex — Minden jog fenntartva</p>
@@ -231,6 +280,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useForm, router, usePage } from '@inertiajs/vue3'
+import { useCart } from '@/composables/useCart'
 
 const props = defineProps({
     auth: {
@@ -282,12 +332,20 @@ const submitRegister = () => {
     registerForm.post('/register')
 }
 
+// Cart
+const { items: cartItems, cartCount, cartTotal, removeItem, updateQuantity } = useCart()
+const cartOpen = ref(false)
+const openCart = () => { cartOpen.value = true }
+const closeCart = () => { cartOpen.value = false }
+
 // Forgot password
 const forgotForm = useForm({ email: '' })
 
 const submitForgot = () => {
     forgotForm.post('/forgot-password')
 }
+
+const formatPrice = (price) => Number(price).toLocaleString('hu-HU')
 
 // Logout
 const logout = () => {
@@ -313,6 +371,40 @@ const logout = () => {
 .logo-icon {
     font-size: 1.6rem;
     line-height: 1;
+}
+
+.cart-btn {
+    position: relative;
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 0.45rem 0.85rem;
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: border-color 0.2s;
+}
+
+.cart-btn:hover {
+    border-color: rgba(255,255,255,0.5);
+    color: #fff;
+}
+
+.cart-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #e63946;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
 }
 
 .login-btn {
@@ -459,5 +551,168 @@ const logout = () => {
     font-size: 0.85rem;
     padding: 1.5rem 0;
     margin-top: 4rem;
+}
+
+/* Cart sidebar */
+.cart-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1040;
+}
+
+.cart-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 360px;
+    max-width: 100vw;
+    height: 100dvh;
+    background: #fff;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+}
+
+.cart-header {
+    background: #1a1a1a;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.25rem;
+    flex-shrink: 0;
+}
+
+.cart-title {
+    font-family: 'Georgia', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.cart-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.cart-item-img {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.cart-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.cart-item-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cart-item-price {
+    font-size: 0.82rem;
+    color: #e63946;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.cart-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+.qty-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: #f5f5f5;
+    font-size: 1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.qty-btn:hover { background: #e63946; color: #fff; border-color: #e63946; }
+
+.qty-val {
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+}
+
+.cart-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 0.95rem;
+}
+
+.cart-empty-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+.cart-footer {
+    padding: 1rem 1.25rem 1.5rem;
+    border-top: 1px solid #eee;
+    flex-shrink: 0;
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.cart-total-price {
+    color: #e63946;
+    font-size: 1.1rem;
+}
+
+/* Transitions */
+.cart-slide-enter-active,
+.cart-slide-leave-active {
+    transition: transform 0.3s ease;
+}
+.cart-slide-enter-from,
+.cart-slide-leave-to {
+    transform: translateX(100%);
+}
+
+.overlay-fade-enter-active,
+.overlay-fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+.overlay-fade-enter-from,
+.overlay-fade-leave-to {
+    opacity: 0;
 }
 </style>

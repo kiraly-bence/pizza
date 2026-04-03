@@ -96,7 +96,7 @@
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <span class="modal-price">{{ formatPrice(selectedProduct.price) }} Ft</span>
                                     </div>
-                                    <button class="btn add-to-cart-btn w-100">
+                                    <button class="btn add-to-cart-btn w-100" @click="addToCart(selectedProduct)">
                                         🛒 Hozzáadás a kosárhoz
                                     </button>
                                 </div>
@@ -113,6 +113,7 @@
 import { ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Modal } from 'bootstrap'
+import { useCart } from '@/composables/useCart'
 
 defineProps({
     auth: {
@@ -127,7 +128,13 @@ defineProps({
 
 defineOptions({ layout: null })
 
+const { addItem } = useCart()
 const selectedProduct = ref(null)
+
+const addToCart = (product) => {
+    addItem(product)
+    Modal.getOrCreateInstance(document.getElementById('productModal')).hide()
+}
 
 const openModal = (product) => {
     selectedProduct.value = product
