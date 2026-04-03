@@ -1,5 +1,5 @@
 <template>
-    <AdminLayout :auth="auth" title="Labelek">
+    <AdminLayout :auth="auth" title="Címkék">
         <div class="admin-card">
             <div class="table-top">
                 <button class="btn-primary" @click="openCreate">+ Új label</button>

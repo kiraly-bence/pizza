@@ -28,7 +28,7 @@
                     <span class="nav-icon">▪</span> Hozzávalók
                 </a>
                 <a href="/admin/labels" class="nav-item" :class="{ active: isActive('/admin/labels') }">
-                    <span class="nav-icon">▪</span> Labelek
+                    <span class="nav-icon">▪</span> Címkék
                 </a>
                 <a href="/admin/coupons" class="nav-item" :class="{ active: isActive('/admin/coupons') }">
                     <span class="nav-icon">▪</span> Kuponok
