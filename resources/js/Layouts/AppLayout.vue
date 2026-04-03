@@ -8,7 +8,7 @@
                 </a>
 
                 <div class="ms-auto d-flex align-items-center gap-3">
-                    <template v-if="auth.user">
+                    <template v-if="auth && auth.user">
                         <div class="dropdown">
                             <button
                                 class="btn user-btn dropdown-toggle d-flex align-items-center gap-2"
@@ -23,7 +23,11 @@
                                 <li><a class="dropdown-item" href="#">Rendeléseim</a></li>
                                 <li><a class="dropdown-item" href="#">Profilom</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="#">Kijelentkezés</a></li>
+                                <li>
+                                    <button class="dropdown-item text-danger" @click="logout">
+                                        Kijelentkezés
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                     </template>
@@ -40,55 +44,157 @@
             <slot />
         </main>
 
+        <!-- Auth modal -->
         <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content auth-modal">
                     <div class="modal-header border-0 pb-0">
-                        <div class="auth-tabs d-flex gap-0 w-100">
+                        <div class="auth-tabs d-flex gap-0 w-100" v-if="authTab !== 'forgot'">
                             <button
                                 class="auth-tab-btn flex-fill"
                                 :class="{ active: authTab === 'login' }"
-                                @click="authTab = 'login'"
+                                @click="switchTab('login')"
                             >Bejelentkezés</button>
                             <button
                                 class="auth-tab-btn flex-fill"
                                 :class="{ active: authTab === 'register' }"
-                                @click="authTab = 'register'"
+                                @click="switchTab('register')"
                             >Regisztráció</button>
+                        </div>
+                        <div v-else class="d-flex align-items-center gap-2 w-100">
+                            <button class="btn btn-sm btn-link p-0 text-secondary" @click="switchTab('login')">
+                                ← Vissza
+                            </button>
+                            <span class="fw-semibold">Elfelejtett jelszó</span>
                         </div>
                         <button type="button" class="btn-close ms-3" data-bs-dismiss="modal" aria-label="Bezárás"></button>
                     </div>
+
                     <div class="modal-body pt-3">
+
+                        <!-- Login -->
                         <div v-if="authTab === 'login'">
+                            <div v-if="loginForm.errors.email" class="alert alert-danger py-2 small mb-3">
+                                {{ loginForm.errors.email }}
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label">E-mail cím</label>
-                                <input type="email" class="form-control" placeholder="pelda@email.hu">
+                                <input
+                                    v-model="loginForm.email"
+                                    type="email"
+                                    class="form-control"
+                                    :class="{ 'is-invalid': loginForm.errors.email }"
+                                    placeholder="pelda@email.hu"
+                                    @keyup.enter="submitLogin"
+                                >
                             </div>
-                            <div class="mb-4">
+                            <div class="mb-2">
                                 <label class="form-label">Jelszó</label>
-                                <input type="password" class="form-control" placeholder="••••••••">
+                                <input
+                                    v-model="loginForm.password"
+                                    type="password"
+                                    class="form-control"
+                                    :class="{ 'is-invalid': loginForm.errors.password }"
+                                    placeholder="••••••••"
+                                    @keyup.enter="submitLogin"
+                                >
+                                <div v-if="loginForm.errors.password" class="invalid-feedback">
+                                    {{ loginForm.errors.password }}
+                                </div>
                             </div>
-                            <button class="btn btn-primary w-100 submit-btn">Bejelentkezés</button>
+                            <div class="text-end mb-4">
+                                <button class="btn btn-link btn-sm p-0 forgot-link" @click="switchTab('forgot')">
+                                    Elfelejtett jelszó?
+                                </button>
+                            </div>
+                            <button
+                                class="btn w-100 submit-btn"
+                                :disabled="loginForm.processing"
+                                @click="submitLogin"
+                            >
+                                {{ loginForm.processing ? 'Bejelentkezés...' : 'Bejelentkezés' }}
+                            </button>
                         </div>
-                        <div v-else>
+
+                        <!-- Register -->
+                        <div v-else-if="authTab === 'register'">
                             <div class="mb-3">
                                 <label class="form-label">Teljes név</label>
-                                <input type="text" class="form-control" placeholder="Kovács János">
+                                <input
+                                    v-model="registerForm.name"
+                                    type="text"
+                                    class="form-control"
+                                    :class="{ 'is-invalid': registerForm.errors.name }"
+                                    placeholder="Kovács János"
+                                >
+                                <div v-if="registerForm.errors.name" class="invalid-feedback">
+                                    {{ registerForm.errors.name }}
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">E-mail cím</label>
-                                <input type="email" class="form-control" placeholder="pelda@email.hu">
+                                <input
+                                    v-model="registerForm.email"
+                                    type="email"
+                                    class="form-control"
+                                    :class="{ 'is-invalid': registerForm.errors.email }"
+                                    placeholder="pelda@email.hu"
+                                >
+                                <div v-if="registerForm.errors.email" class="invalid-feedback">
+                                    {{ registerForm.errors.email }}
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Jelszó</label>
-                                <input type="password" class="form-control" placeholder="••••••••">
+                                <input
+                                    v-model="registerForm.password"
+                                    type="password"
+                                    class="form-control"
+                                    :class="{ 'is-invalid': registerForm.errors.password }"
+                                    placeholder="••••••••"
+                                >
+                                <div v-if="registerForm.errors.password" class="invalid-feedback">
+                                    {{ registerForm.errors.password }}
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <label class="form-label">Jelszó megerősítése</label>
-                                <input type="password" class="form-control" placeholder="••••••••">
+                                <input
+                                    v-model="registerForm.password_confirmation"
+                                    type="password"
+                                    class="form-control"
+                                    placeholder="••••••••"
+                                    @keyup.enter="submitRegister"
+                                >
                             </div>
-                            <button class="btn btn-primary w-100 submit-btn">Regisztráció</button>
+                            <button
+                                class="btn w-100 submit-btn"
+                                :disabled="registerForm.processing"
+                                @click="submitRegister"
+                            >
+                                {{ registerForm.processing ? 'Regisztráció...' : 'Regisztráció' }}
+                            </button>
                         </div>
+
+                        <!-- Forgot password -->
+                        <div v-else-if="authTab === 'forgot'">
+                            <div class="forgot-info">
+                                <div class="forgot-icon">🔒</div>
+                                <p class="forgot-text">
+                                    Ha elfelejtette jelszavát, kérjük vegye fel a kapcsolatot az adminisztrátorral az alábbi e-mail címen:
+                                </p>
+                                <a href="mailto:admin@pizzarex.hu" class="forgot-email">
+                                    admin@pizzarex.hu
+                                </a>
+                                <p class="forgot-subtext">
+                                    Jelezze a regisztrált e-mail címét és kollégáink hamarosan segítenek.
+                                </p>
+                            </div>
+                            <button class="btn w-100 submit-btn mt-3" @click="switchTab('login')">
+                                Vissza a bejelentkezéshez
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -104,6 +210,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useForm, router } from '@inertiajs/vue3'
 
 const props = defineProps({
     auth: {
@@ -114,8 +221,14 @@ const props = defineProps({
 
 const authTab = ref('login')
 
+const switchTab = (tab) => {
+    authTab.value = tab
+    loginForm.clearErrors()
+    registerForm.clearErrors()
+}
+
 const initials = computed(() => {
-    if (!props.auth.user) return ''
+    if (!props.auth?.user) return ''
     return props.auth.user.name
         .split(' ')
         .map(n => n[0])
@@ -123,6 +236,33 @@ const initials = computed(() => {
         .toUpperCase()
         .slice(0, 2)
 })
+
+// Login
+const loginForm = useForm({
+    email: '',
+    password: '',
+})
+
+const submitLogin = () => {
+    loginForm.post('/login')
+}
+
+// Register
+const registerForm = useForm({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+})
+
+const submitRegister = () => {
+    registerForm.post('/register')
+}
+
+// Logout
+const logout = () => {
+    router.post('/logout')
+}
 </script>
 
 <style scoped>
@@ -216,8 +356,56 @@ const initials = computed(() => {
     color: #fff;
 }
 
+.forgot-link {
+    font-size: 0.82rem;
+    color: #e63946;
+    text-decoration: none;
+}
+
+.forgot-link:hover {
+    color: #c1121f;
+    text-decoration: underline;
+}
+
+.forgot-info {
+    text-align: center;
+    padding: 1rem 0.5rem;
+}
+
+.forgot-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.forgot-text {
+    color: #555;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+}
+
+.forgot-email {
+    display: inline-block;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e63946;
+    text-decoration: none;
+    margin-bottom: 0.75rem;
+}
+
+.forgot-email:hover {
+    text-decoration: underline;
+}
+
+.forgot-subtext {
+    color: #888;
+    font-size: 0.82rem;
+    margin: 0;
+}
+
 .submit-btn {
     background: #e63946;
+    color: #fff;
     border: none;
     border-radius: 8px;
     padding: 0.65rem;
@@ -226,8 +414,13 @@ const initials = computed(() => {
     transition: background 0.2s;
 }
 
-.submit-btn:hover {
+.submit-btn:hover:not(:disabled) {
     background: #c1121f;
+}
+
+.submit-btn:disabled {
+    opacity: 0.7;
+    color: #fff;
 }
 
 .site-footer {
