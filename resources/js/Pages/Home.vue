@@ -3,38 +3,57 @@
         <section class="hero-section">
             <div class="container">
                 <div class="hero-content text-center">
-                    <h1 class="hero-title">Friss pizzák,<br><span class="accent">azonnali szállítás</span></h1>
-                    <p class="hero-sub">Házi készítésű pizzáink friss alapanyagokból, egyenesen az ajtódig.</p>
+                    <h1 class="hero-title">Friss ételek,<br><span class="accent">azonnali szállítás</span></h1>
+                    <p class="hero-sub">Házi készítésű fogásaink friss alapanyagokból, egyenesen az ajtódig.</p>
                 </div>
             </div>
         </section>
 
-        <section class="pizzas-section">
+        <section class="menu-section">
             <div class="container">
-                <h2 class="section-title">Pizzáink</h2>
-                <div class="row g-4">
-                    <div
-                        v-for="pizza in pizzas"
-                        :key="pizza.id"
-                        class="col-12 col-md-6 col-lg-4"
-                    >
-                        <div class="card pizza-card h-100" @click="openPizzaModal(pizza)" role="button">
-                            <div class="pizza-img-wrap">
-                                <img :src="pizza.image" :alt="pizza.name" class="card-img-top pizza-img">
-                                <div class="pizza-badge" v-if="pizza.badge">{{ pizza.badge }}</div>
-                            </div>
-                            <div class="card-body d-flex flex-column">
-                                <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <h5 class="card-title pizza-name mb-0">{{ pizza.name }}</h5>
-                                    <span class="pizza-price">{{ pizza.price }} Ft</span>
+                <div v-for="category in categories" :key="category.id" class="category-block">
+                    <h2 class="section-title">{{ category.name }}</h2>
+
+                    <div v-if="category.products.length === 0" class="text-muted fst-italic mb-4">
+                        Hamarosan...
+                    </div>
+
+                    <div v-else class="row g-4">
+                        <div
+                            v-for="product in category.products"
+                            :key="product.id"
+                            class="col-12 col-md-6 col-lg-4"
+                        >
+                            <div class="card pizza-card h-100" @click="openModal(product)" role="button">
+                                <div class="pizza-img-wrap">
+                                    <img
+                                        :src="product.image ?? 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=80'"
+                                        :alt="product.name"
+                                        class="card-img-top pizza-img"
+                                    >
+                                    <div
+                                        v-for="label in primaryLabels(product)"
+                                        :key="label.id"
+                                        class="pizza-badge"
+                                    >{{ label.name }}</div>
                                 </div>
-                                <p class="card-text pizza-desc flex-grow-1">{{ pizza.description }}</p>
-                                <div class="pizza-tags mt-2">
-                                    <span v-for="tag in pizza.tags" :key="tag" class="pizza-tag">{{ tag }}</span>
+                                <div class="card-body d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <h5 class="card-title pizza-name mb-0">{{ product.name }}</h5>
+                                        <span class="pizza-price">{{ formatPrice(product.price) }} Ft</span>
+                                    </div>
+                                    <p class="card-text pizza-desc flex-grow-1">{{ product.description }}</p>
+                                    <div class="pizza-tags mt-2">
+                                        <span
+                                            v-for="label in secondaryLabels(product)"
+                                            :key="label.id"
+                                            class="pizza-tag"
+                                        >{{ label.name }}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="card-footer pizza-card-footer">
-                                <span class="order-hint">Kattints a rendeléshez →</span>
+                                <div class="card-footer pizza-card-footer">
+                                    <span class="order-hint">Kattints a rendeléshez →</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -42,26 +61,41 @@
             </div>
         </section>
 
-        <div class="modal fade" id="pizzaModal" tabindex="-1" aria-hidden="true">
+        <!-- Product modal -->
+        <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content pizza-modal" v-if="selectedPizza">
+                <div class="modal-content pizza-modal" v-if="selectedProduct">
                     <div class="modal-header border-0">
-                        <h5 class="modal-title pizza-modal-title">{{ selectedPizza.name }}</h5>
+                        <h5 class="modal-title pizza-modal-title">{{ selectedProduct.name }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
                     </div>
                     <div class="modal-body pt-0">
                         <div class="row g-4">
                             <div class="col-md-5">
-                                <img :src="selectedPizza.image" :alt="selectedPizza.name" class="img-fluid rounded-3 w-100 pizza-modal-img">
+                                <img
+                                    :src="selectedProduct.image ?? 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=80'"
+                                    :alt="selectedProduct.name"
+                                    class="img-fluid rounded-3 w-100 pizza-modal-img"
+                                >
                             </div>
-                            <div class="col-md-7 d-flex flex-column justify-content-between">
-                                <div>
-                                    <p class="pizza-modal-desc">{{ selectedPizza.description }}</p>
-                                    <div class="pizza-tags mb-3">
-                                        <span v-for="tag in selectedPizza.tags" :key="tag" class="pizza-tag">{{ tag }}</span>
+                            <div class="col-md-7 d-flex flex-column">
+                                <p class="pizza-modal-desc">{{ selectedProduct.description }}</p>
+
+                                <div v-if="selectedProduct.ingredients.length" class="mb-3">
+                                    <p class="ingredients-title">Hozzávalók:</p>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <span
+                                            v-for="ingredient in selectedProduct.ingredients"
+                                            :key="ingredient.id"
+                                            class="ingredient-tag"
+                                        >{{ ingredient.name }}</span>
                                     </div>
                                 </div>
-                                <div class="add-to-cart-section mt-3">
+
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="modal-price">{{ formatPrice(selectedProduct.price) }} Ft</span>
+                                    </div>
                                     <button class="btn add-to-cart-btn w-100">
                                         🛒 Hozzáadás a kosárhoz
                                     </button>
@@ -76,87 +110,39 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Modal } from 'bootstrap'
 
 defineProps({
     auth: {
         type: Object,
         default: () => ({ user: null })
+    },
+    categories: {
+        type: Array,
+        default: () => []
     }
 })
 
 defineOptions({ layout: null })
 
-const selectedPizza = ref(null)
-let pizzaModalInstance = null
+const selectedProduct = ref(null)
 
-onMounted(() => {
-    pizzaModalInstance = new Modal(document.getElementById('pizzaModal'))
-})
-
-const openPizzaModal = (pizza) => {
-    selectedPizza.value = pizza
-    pizzaModalInstance.show()
+const openModal = (product) => {
+    selectedProduct.value = product
+    const el = document.getElementById('productModal')
+    const modal = window.bootstrap.Modal.getOrCreateInstance(el)
+    modal.show()
 }
 
-const pizzas = [
-    {
-        id: 1,
-        name: 'Margherita',
-        description: 'Klasszikus olasz pizza paradicsomszósszal, friss mozzarellával és bazsalikommal.',
-        price: '2 490',
-        image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&q=80',
-        tags: ['Vegetáriánus', 'Klasszikus'],
-        badge: null,
-    },
-    {
-        id: 2,
-        name: 'Diavola',
-        description: 'Csípős szalámi, jalapeño paprika és füstölt mozzarella az igazi pikáns élményért.',
-        price: '2 890',
-        image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&q=80',
-        tags: ['Csípős', 'Bestseller'],
-        badge: '🔥 Legjobb',
-    },
-    {
-        id: 3,
-        name: 'Quattro Formaggi',
-        description: 'Négy sajt harmonikus keveréke: mozzarella, gorgonzola, parmezán és pecorino.',
-        price: '3 190',
-        image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=80',
-        tags: ['Vegetáriánus', 'Sajtos'],
-        badge: null,
-    },
-    {
-        id: 4,
-        name: 'Prosciutto e Funghi',
-        description: 'Pármai sonka és friss erdei gombák, tejszínes alapon tálalva.',
-        price: '3 090',
-        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80',
-        tags: ['Sonkás', 'Gombás'],
-        badge: null,
-    },
-    {
-        id: 5,
-        name: 'BBQ Csirke',
-        description: 'Grillezett csirkemell, füstölt BBQ szósz, lilahagyma és mozzarella.',
-        price: '3 290',
-        image: 'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=600&q=80',
-        tags: ['Csirkés', 'BBQ'],
-        badge: '⭐ Új',
-    },
-    {
-        id: 6,
-        name: 'Tonno e Cipolla',
-        description: 'Tonhal, vöröshagyma, kapribogyó és olívaolaj — a mediterrán ízek kedvelőinek.',
-        price: '2 990',
-        image: 'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=600&q=80',
-        tags: ['Halas', 'Mediterrán'],
-        badge: null,
-    },
-]
+const primaryLabels = (product) =>
+    product.labels.filter(l => l.type === 'primary')
+
+const secondaryLabels = (product) =>
+    product.labels.filter(l => l.type === 'secondary')
+
+const formatPrice = (price) =>
+    Number(price).toLocaleString('hu-HU')
 </script>
 
 <style scoped>
@@ -185,9 +171,7 @@ const pizzas = [
     margin-bottom: 1rem;
 }
 
-.accent {
-    color: #e63946;
-}
+.accent { color: #e63946; }
 
 .hero-sub {
     color: rgba(255,255,255,0.6);
@@ -196,9 +180,9 @@ const pizzas = [
     margin: 0 auto;
 }
 
-.pizzas-section {
-    padding-bottom: 3rem;
-}
+.menu-section { padding-bottom: 3rem; }
+
+.category-block { margin-bottom: 3.5rem; }
 
 .section-title {
     font-family: 'Georgia', serif;
@@ -206,6 +190,9 @@ const pizzas = [
     font-weight: 700;
     color: #1a1a1a;
     margin-bottom: 1.75rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 3px solid #e63946;
+    display: inline-block;
 }
 
 .pizza-card {
@@ -235,9 +222,7 @@ const pizzas = [
     transition: transform 0.3s;
 }
 
-.pizza-card:hover .pizza-img {
-    transform: scale(1.04);
-}
+.pizza-card:hover .pizza-img { transform: scale(1.04); }
 
 .pizza-badge {
     position: absolute;
@@ -273,11 +258,7 @@ const pizzas = [
     margin-top: 0.4rem;
 }
 
-.pizza-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-}
+.pizza-tags { display: flex; flex-wrap: wrap; gap: 5px; }
 
 .pizza-tag {
     background: #f5f5f5;
@@ -323,6 +304,32 @@ const pizzas = [
     color: #555;
     font-size: 0.95rem;
     line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.ingredients-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ingredient-tag {
+    background: #fff3f3;
+    color: #c1121f;
+    border: 1px solid #fcc;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.modal-price {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #e63946;
 }
 
 .add-to-cart-btn {
