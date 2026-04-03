@@ -25,7 +25,7 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="#">Rendeléseim</a></li>
-                                <li><a class="dropdown-item" href="#">Profilom</a></li>
+                                <li><a class="dropdown-item" href="/profil">Profilom</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <button class="dropdown-item text-danger" @click="logout">
@@ -261,7 +261,16 @@
                         <span>Összesen:</span>
                         <span class="cart-total-price">{{ formatPrice(cartTotal) }} Ft</span>
                     </div>
-                    <button class="btn w-100 submit-btn mt-3">Megrendelés →</button>
+                    <template v-if="auth && auth.user">
+                        <a href="/checkout" class="btn w-100 submit-btn mt-3" @click="closeCart">Megrendelés →</a>
+                    </template>
+                    <template v-else>
+                        <p class="cart-login-hint">A rendelés leadásához be kell jelentkezned.</p>
+                        <button
+                            class="btn w-100 submit-btn"
+                            @click="closeCart(); getAuthModal().show()"
+                        >Bejelentkezés</button>
+                    </template>
                 </div>
             </div>
         </transition>
@@ -280,6 +289,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useForm, router, usePage } from '@inertiajs/vue3'
+import { Modal } from 'bootstrap'
 import { useCart } from '@/composables/useCart'
 
 const props = defineProps({
@@ -316,8 +326,12 @@ const loginForm = useForm({
     password: '',
 })
 
+const getAuthModal = () => Modal.getOrCreateInstance(document.getElementById('authModal'))
+
 const submitLogin = () => {
-    loginForm.post('/login')
+    loginForm.post('/login', {
+        onSuccess: () => getAuthModal().hide(),
+    })
 }
 
 // Register
@@ -695,6 +709,13 @@ const logout = () => {
 .cart-total-price {
     color: #e63946;
     font-size: 1.1rem;
+}
+
+.cart-login-hint {
+    font-size: 0.8rem;
+    color: #888;
+    text-align: center;
+    margin: 0.75rem 0 0.5rem;
 }
 
 /* Transitions */

@@ -38,8 +38,10 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'flash' => [
-                'forgot_status' => $request->session()->get('forgot_status'),
-                'reset_success' => $request->session()->get('reset_success'),
+                'forgot_status'  => $request->session()->get('forgot_status'),
+                'reset_success'  => $request->session()->get('reset_success'),
+                'order_success'  => $request->session()->get('order_success'),
+                'address_saved'  => $request->session()->get('address_saved'),
             ],
         ];
     }
