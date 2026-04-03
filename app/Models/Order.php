@@ -14,6 +14,7 @@ class Order extends Model
         'city',
         'street',
         'note',
+        'delivery_message',
         'subtotal',
         'delivery_fee',
         'service_fee',

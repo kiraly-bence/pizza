@@ -94,6 +94,18 @@
                             </div>
                         </div>
 
+                        <!-- Delivery message -->
+                        <div class="checkout-card mb-4">
+                            <h2 class="card-section-title">Üzenet a futárnak</h2>
+                            <textarea
+                                v-model="form.delivery_message"
+                                class="form-control"
+                                rows="3"
+                                placeholder="Pl. Csengő nem működik, kérlek hívj. / Hagyd az ajtó előtt."
+                            ></textarea>
+                            <div class="form-text mt-1">Opcionális — a futár látni fogja ezt az üzenetet.</div>
+                        </div>
+
                         <!-- Payment -->
                         <div class="checkout-card">
                             <h2 class="card-section-title">Fizetési mód</h2>
@@ -192,12 +204,13 @@ const { items: cartItems, cartTotal, clearCart } = useCart()
 const grandTotal = computed(() => cartTotal.value + props.deliveryFee + props.serviceFee)
 
 const form = useForm({
-    payment_method: 'cash',
-    zip:            props.savedAddress.zip    ?? '',
-    city:           props.savedAddress.city   ?? '',
-    street:         props.savedAddress.street ?? '',
-    note:           props.savedAddress.note   ?? '',
-    save_address:   false,
+    payment_method:   'cash',
+    zip:              props.savedAddress.zip    ?? '',
+    city:             props.savedAddress.city   ?? '',
+    street:           props.savedAddress.street ?? '',
+    note:             props.savedAddress.note   ?? '',
+    save_address:     false,
+    delivery_message: '',
 })
 
 const submit = () => {

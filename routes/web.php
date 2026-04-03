@@ -23,8 +23,9 @@ Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name(
 
 // Checkout & profile (auth required)
 Route::middleware('auth')->group(function () {
-    Route::get('/checkout', [OrderController::class, 'index'])->name('checkout');
+    Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/rendeleseim', [OrderController::class, 'myOrders'])->name('orders.my');
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profil/cim', [ProfileController::class, 'updateAddress'])->name('profile.address');
 });

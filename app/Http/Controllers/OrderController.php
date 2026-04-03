@@ -13,7 +13,7 @@ class OrderController extends Controller
     const DELIVERY_FEE = 990;
     const SERVICE_FEE  = 199;
 
-    public function index()
+    public function checkout()
     {
         $user = auth()->user();
 
@@ -30,6 +30,37 @@ class OrderController extends Controller
         ]);
     }
 
+    public function myOrders()
+    {
+        $user = auth()->user();
+
+        $orders = Order::where('user_id', $user->id)
+            ->with('items')
+            ->latest()
+            ->get()
+            ->map(fn($order) => [
+                'id'             => $order->id,
+                'status'         => $order->status,
+                'payment_method' => $order->payment_method,
+                'address'        => trim("{$order->zip} {$order->city}, {$order->street}" . ($order->note ? ", {$order->note}" : '')),
+                'subtotal'       => $order->subtotal,
+                'delivery_fee'   => $order->delivery_fee,
+                'service_fee'    => $order->service_fee,
+                'total'          => $order->total,
+                'created_at'     => $order->created_at->format('Y. m. d. H:i'),
+                'items'          => $order->items->map(fn($item) => [
+                    'name'     => $item->name,
+                    'price'    => $item->price,
+                    'quantity' => $item->quantity,
+                ]),
+            ]);
+
+        return Inertia::render('Orders', [
+            'auth'   => ['user' => $user],
+            'orders' => $orders,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -40,8 +71,9 @@ class OrderController extends Controller
             'zip'            => ['required', 'string', 'max:10'],
             'city'           => ['required', 'string', 'max:100'],
             'street'         => ['required', 'string', 'max:255'],
-            'note'           => ['nullable', 'string', 'max:255'],
-            'save_address'   => ['boolean'],
+            'note'             => ['nullable', 'string', 'max:255'],
+            'delivery_message' => ['nullable', 'string', 'max:1000'],
+            'save_address'     => ['boolean'],
         ], [
             'items.required'          => 'A kosár üres.',
             'payment_method.required' => 'Válassz fizetési módot.',
@@ -76,7 +108,8 @@ class OrderController extends Controller
                 'zip'            => $validated['zip'],
                 'city'           => $validated['city'],
                 'street'         => $validated['street'],
-                'note'           => $validated['note'] ?? null,
+                'note'             => $validated['note'] ?? null,
+                'delivery_message' => $validated['delivery_message'] ?? null,
                 'subtotal'       => $subtotal,
                 'delivery_fee'   => self::DELIVERY_FEE,
                 'service_fee'    => self::SERVICE_FEE,

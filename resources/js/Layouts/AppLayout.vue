@@ -24,7 +24,7 @@
                                 <span>{{ auth.user.name }}</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#">Rendeléseim</a></li>
+                                <li><a class="dropdown-item" href="/rendeleseim">Rendeléseim</a></li>
                                 <li><a class="dropdown-item" href="/profil">Profilom</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
@@ -278,6 +278,21 @@
             <div v-if="cartOpen" class="cart-overlay" @click="closeCart"></div>
         </transition>
 
+        <!-- Order success overlay -->
+        <transition name="overlay-fade">
+            <div v-if="orderSuccess" class="thankyou-overlay" @click.self="dismissOrder">
+                <div class="thankyou-card">
+                    <div class="thankyou-icon">🍕</div>
+                    <h2 class="thankyou-title">Köszönjük a rendelésed!</h2>
+                    <p class="thankyou-text">
+                        Megkaptuk a rendelésed, és már dolgozunk rajta.<br>
+                        Hamarosan megérkezik hozzád a friss étel!
+                    </p>
+                    <button class="btn submit-btn px-5" @click="dismissOrder">Rendben</button>
+                </div>
+            </div>
+        </transition>
+
         <footer class="site-footer">
             <div class="container text-center">
                 <p class="mb-0">© 2026 PizzaRex — Minden jog fenntartva</p>
@@ -302,6 +317,9 @@ const props = defineProps({
 const page = usePage()
 const authTab = ref('login')
 const forgotSent = computed(() => page.props.flash?.forgot_status === 'sent')
+
+const orderSuccess = ref(!!page.props.flash?.order_success)
+const dismissOrder = () => { orderSuccess.value = false }
 
 const switchTab = (tab) => {
     authTab.value = tab
@@ -716,6 +734,56 @@ const logout = () => {
     color: #888;
     text-align: center;
     margin: 0.75rem 0 0.5rem;
+}
+
+/* Thank you overlay */
+.thankyou-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.thankyou-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.thankyou-icon {
+    font-size: 4rem;
+    line-height: 1;
+    margin-bottom: 1.25rem;
+    animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+    0%   { transform: scale(0.5); opacity: 0; }
+    70%  { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.thankyou-title {
+    font-family: 'Georgia', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.75rem;
+}
+
+.thankyou-text {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 2rem;
 }
 
 /* Transitions */
