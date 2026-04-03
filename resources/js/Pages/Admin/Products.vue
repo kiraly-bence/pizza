@@ -8,7 +8,7 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th></th>
                             <th>Név</th>
                             <th>Kategória</th>
                             <th>Ár</th>
@@ -19,7 +19,15 @@
                     </thead>
                     <tbody>
                         <tr v-for="product in products" :key="product.id">
-                            <td class="text-muted">{{ product.id }}</td>
+                            <td class="thumb-cell">
+                                <img
+                                    v-if="product.image"
+                                    :src="product.image"
+                                    class="product-thumb"
+                                    :alt="product.name"
+                                >
+                                <div v-else class="product-thumb-placeholder">📷</div>
+                            </td>
                             <td>
                                 <div class="fw-semibold">{{ product.name }}</div>
                                 <div class="text-muted small" v-if="product.description">
@@ -65,9 +73,30 @@
                     <textarea v-model="form.description" class="form-control" rows="2" placeholder="Rövid leírás..."></textarea>
                 </div>
 
+                <!-- Image upload -->
                 <div class="mb-3">
-                    <label class="form-label">Kép URL</label>
-                    <input v-model="form.image" class="form-control" placeholder="https://...">
+                    <label class="form-label">Kép</label>
+                    <div class="image-upload-area" @click="$refs.fileInput.click()">
+                        <img v-if="imagePreview" :src="imagePreview" class="image-preview" alt="Előnézet">
+                        <div v-else class="image-placeholder">
+                            <span class="image-placeholder-icon">📷</span>
+                            <span>Kattints a kép feltöltéséhez</span>
+                        </div>
+                        <div v-if="imagePreview" class="image-overlay">Kép cseréje</div>
+                    </div>
+                    <input
+                        ref="fileInput"
+                        type="file"
+                        accept="image/*"
+                        class="hidden-input"
+                        @change="onFileChange"
+                    >
+                    <button
+                        v-if="imagePreview"
+                        class="btn-remove-image"
+                        @click="removeImage"
+                    >Kép eltávolítása</button>
+                    <span class="error-text" v-if="errors.image">{{ errors.image }}</span>
                 </div>
 
                 <div class="row-two mb-3">
@@ -143,15 +172,17 @@ const props = defineProps({
     labels:      { type: Array,  default: () => [] },
 })
 
-const modal   = ref(false)
-const editing = ref(null)
-const saving  = ref(false)
-const errors  = ref({})
+const modal        = ref(false)
+const editing      = ref(null)
+const saving       = ref(false)
+const errors       = ref({})
+const imageFile    = ref(null)
+const imagePreview = ref(null)
+const fileInput    = ref(null)
 
 const emptyForm = () => ({
     name:         '',
     description:  '',
-    image:        '',
     price:        0,
     sort_order:   0,
     is_available: true,
@@ -162,19 +193,33 @@ const emptyForm = () => ({
 
 const form = ref(emptyForm())
 
+const onFileChange = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    imageFile.value    = file
+    imagePreview.value = URL.createObjectURL(file)
+}
+
+const removeImage = () => {
+    imageFile.value    = null
+    imagePreview.value = null
+    if (fileInput.value) fileInput.value.value = ''
+}
+
 const openCreate = () => {
-    editing.value = null
-    form.value    = emptyForm()
-    errors.value  = {}
-    modal.value   = true
+    editing.value      = null
+    form.value         = emptyForm()
+    errors.value       = {}
+    imageFile.value    = null
+    imagePreview.value = null
+    modal.value        = true
 }
 
 const openEdit = (p) => {
-    editing.value = p.id
-    form.value    = {
+    editing.value      = p.id
+    form.value         = {
         name:         p.name,
         description:  p.description ?? '',
-        image:        p.image ?? '',
         price:        p.price,
         sort_order:   p.sort_order,
         is_available: p.is_available,
@@ -182,15 +227,24 @@ const openEdit = (p) => {
         ingredients:  [...p.ingredients],
         labels:       [...p.labels],
     }
-    errors.value  = {}
-    modal.value   = true
+    errors.value       = {}
+    imageFile.value    = null
+    imagePreview.value = p.image ?? null  // show existing image
+    modal.value        = true
 }
 
 const save = () => {
     saving.value = true
+
+    const data = { ...form.value }
+    if (imageFile.value) {
+        data.image = imageFile.value
+    }
+
     const url    = editing.value ? `/admin/products/${editing.value}` : '/admin/products'
     const method = editing.value ? 'patch' : 'post'
-    router[method](url, form.value, {
+
+    router[method](url, data, {
         preserveScroll: true,
         onSuccess: () => { modal.value = false; saving.value = false },
         onError:   (e) => { errors.value = e; saving.value = false },
@@ -200,8 +254,8 @@ const save = () => {
 const toggleAvailable = (product) => {
     router.patch(`/admin/products/${product.id}`, {
         ...product,
-        ingredients: [...product.ingredients],
-        labels:      [...product.labels],
+        ingredients:  [...product.ingredients],
+        labels:       [...product.labels],
         is_available: !product.is_available,
     }, { preserveScroll: true })
 }
@@ -216,6 +270,26 @@ const formatPrice = (v) => Number(v).toLocaleString('hu-HU')
 
 <style scoped>
 @import './admin-table.css';
+
+.thumb-cell { width: 56px; }
+
+.product-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.product-thumb-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
 
 .toggle-btn {
     border: none;
@@ -240,5 +314,70 @@ const formatPrice = (v) => Number(v).toLocaleString('hu-HU')
     font-size: 0.78rem;
     margin-top: 2px;
     display: block;
+}
+
+/* Image upload */
+.image-upload-area {
+    position: relative;
+    border: 2px dashed #d1d5db;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9fafb;
+}
+
+.image-upload-area:hover {
+    border-color: #e63946;
+}
+
+.image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: #9ca3af;
+    font-size: 0.85rem;
+}
+
+.image-placeholder-icon { font-size: 2rem; }
+
+.image-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.image-upload-area:hover .image-overlay { opacity: 1; }
+
+.hidden-input { display: none; }
+
+.btn-remove-image {
+    margin-top: 0.4rem;
+    background: none;
+    border: none;
+    color: #dc2626;
+    font-size: 0.78rem;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
 }
 </style>

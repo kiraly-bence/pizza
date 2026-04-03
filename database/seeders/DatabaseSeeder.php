@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $pizzak->id,
             'name'        => 'Margherita',
             'description' => 'Klasszikus olasz pizza paradicsomszósszal, friss mozzarellával és bazsalikommal.',
-            'image'       => 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&q=80',
+            'image'       => 'products/margherita.jpg',
             'price'       => 2490,
             'sort_order'  => 1,
         ]);
@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $pizzak->id,
             'name'        => 'Diavola',
             'description' => 'Csípős szalámi, jalapeño paprika és füstölt mozzarella az igazi pikáns élményért.',
-            'image'       => 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&q=80',
+            'image'       => 'products/diavola.jpg',
             'price'       => 2890,
             'sort_order'  => 2,
         ]);
@@ -71,7 +71,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $pizzak->id,
             'name'        => 'Quattro Formaggi',
             'description' => 'Négy sajt harmonikus keveréke: mozzarella, gorgonzola, parmezán és pecorino.',
-            'image'       => 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=80',
+            'image'       => 'products/quattro-formaggi.jpg',
             'price'       => 3190,
             'sort_order'  => 3,
         ]);
@@ -88,7 +88,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $pizzak->id,
             'name'        => 'Prosciutto e Funghi',
             'description' => 'Pármai sonka és friss erdei gombák, tejszínes alapon tálalva.',
-            'image'       => 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80',
+            'image'       => 'products/prosciutto-e-funghi.jpg',
             'price'       => 3090,
             'sort_order'  => 4,
         ]);
@@ -103,7 +103,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $pizzak->id,
             'name'        => 'BBQ Csirke',
             'description' => 'Grillezett csirkemell, füstölt BBQ szósz, lilahagyma és mozzarella.',
-            'image'       => 'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=600&q=80',
+            'image'       => 'products/bbq-csirke.jpg',
             'price'       => 3290,
             'sort_order'  => 5,
         ]);
@@ -119,7 +119,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $pizzak->id,
             'name'        => 'Tonno e Cipolla',
             'description' => 'Tonhal, vöröshagyma, kapribogyó és olívaolaj — a mediterrán ízek kedvelőinek.',
-            'image'       => 'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=600&q=80',
+            'image'       => 'products/tonno-e-cipolla.jpg',
             'price'       => 2990,
             'sort_order'  => 6,
         ]);
@@ -138,7 +138,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $hamburgerek->id,
             'name'        => 'Sajtburger',
             'description' => 'Szaftos marha húspogácsa dupla cheddar sajttal, friss salátával és paradicsomos szósszal.',
-            'image'       => 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80',
+            'image'       => 'products/sajtburger.jpg',
             'price'       => 2890,
             'sort_order'  => 1,
         ]);
@@ -157,7 +157,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $hamburgerek->id,
             'name'        => 'Bacon Burger',
             'description' => 'Ropogós bacon, cheddar sajt, karamellizált hagyma és BBQ szósz.',
-            'image'       => 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=600&q=80',
+            'image'       => 'products/bacon-burger.jpg',
             'price'       => 3190,
             'sort_order'  => 2,
         ]);
@@ -174,7 +174,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $hamburgerek->id,
             'name'        => 'Crispy Csirke Burger',
             'description' => 'Ropogósra sült csirkemell, coleslaw saláta, jalapeño és csípős majonéz.',
-            'image'       => 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=600&q=80',
+            'image'       => 'products/crispy-csirke-burger.jpg',
             'price'       => 2990,
             'sort_order'  => 3,
         ]);
@@ -193,7 +193,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $koretek->id,
             'name'        => 'Sült krumpli',
             'description' => 'Aranybarna, ropogós hasábburgonya tengeri sóval megszórva.',
-            'image'       => 'https://images.unsplash.com/photo-1576107232684-1279f390859f?w=600&q=80',
+            'image'       => 'products/sult-krumpli.jpg',
             'price'       => 790,
             'sort_order'  => 1,
         ]);
@@ -206,7 +206,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $koretek->id,
             'name'        => 'Fokhagymás pirítós',
             'description' => 'Friss kenyér fokhagymás vajjal megkenve, aranybarnára pirítva.',
-            'image'       => 'https://images.unsplash.com/photo-1619535860434-cf9b902f8a8e?w=600&q=80',
+            'image'       => 'products/fokhagymas-piritos.jpg',
             'price'       => 590,
             'sort_order'  => 2,
         ]);
@@ -223,7 +223,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $szoszok->id,
             'name'        => 'Tzatziki',
             'description' => 'Görög joghurtos-uborkas mártogatós, fokhagymával és mentával.',
-            'image'       => 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=600&q=80',
+            'image'       => 'products/tzatziki.jpg',
             'price'       => 490,
             'sort_order'  => 1,
         ]);
@@ -238,7 +238,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $szoszok->id,
             'name'        => 'Füstölt BBQ szósz',
             'description' => 'Házi készítésű füstölt BBQ mártogatós, enyhén csípős.',
-            'image'       => 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=600&q=80',
+            'image'       => 'products/fustolt-bbq-szosz.jpg',
             'price'       => 390,
             'sort_order'  => 2,
         ]);
@@ -251,7 +251,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $salatak->id,
             'name'        => 'Caesar saláta',
             'description' => 'Ropogós római saláta, parmezán forgácsok, krutonnal és Caesar öntettel.',
-            'image'       => 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=600&q=80',
+            'image'       => 'products/caesar-salata.jpg',
             'price'       => 1890,
             'sort_order'  => 1,
         ]);
@@ -267,7 +267,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $salatak->id,
             'name'        => 'Görög saláta',
             'description' => 'Paradicsom, uborka, lilahagyma, olívabogyó és fetasajt, olívaolajjal meglocsolva.',
-            'image'       => 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=80',
+            'image'       => 'products/gorog-salata.jpg',
             'price'       => 1690,
             'sort_order'  => 2,
         ]);

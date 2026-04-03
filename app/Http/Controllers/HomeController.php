@@ -17,7 +17,14 @@ class HomeController extends Controller
                     ->orderBy('sort_order')
                     ->with(['ingredients', 'labels']),
             ])
-            ->get();
+            ->get()
+            ->each(function ($category) {
+                $category->products->each(function ($product) {
+                    if ($product->image) {
+                        $product->image = '/storage/' . $product->image;
+                    }
+                });
+            });
 
         return Inertia::render('Home', [
             'auth'       => ['user' => auth()->user()],

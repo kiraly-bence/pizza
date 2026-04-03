@@ -8,6 +8,7 @@ use App\Models\Ingredient;
 use App\Models\Label;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -21,7 +22,8 @@ class ProductController extends Controller
                 'id'           => $p->id,
                 'name'         => $p->name,
                 'description'  => $p->description,
-                'image'        => $p->image,
+                'image'        => $p->image ? '/storage/' . $p->image : null,
+                'image_path'   => $p->image,
                 'price'        => $p->price,
                 'sort_order'   => $p->sort_order,
                 'is_available' => $p->is_available,
@@ -40,21 +42,32 @@ class ProductController extends Controller
         ]);
     }
 
+    private function rules(): array
+    {
+        return [
+            'name'          => ['required', 'string', 'max:255'],
+            'description'   => ['nullable', 'string'],
+            'image'         => ['nullable', 'image', 'max:4096'],
+            'price'         => ['required', 'integer', 'min:0'],
+            'sort_order'    => ['required', 'integer', 'min:0'],
+            'is_available'  => ['boolean'],
+            'category_id'   => ['required', 'exists:categories,id'],
+            'ingredients'   => ['array'],
+            'ingredients.*' => ['exists:ingredients,id'],
+            'labels'        => ['array'],
+            'labels.*'      => ['exists:labels,id'],
+        ];
+    }
+
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name'         => ['required', 'string', 'max:255'],
-            'description'  => ['nullable', 'string'],
-            'image'        => ['nullable', 'string', 'max:500'],
-            'price'        => ['required', 'integer', 'min:0'],
-            'sort_order'   => ['required', 'integer', 'min:0'],
-            'is_available' => ['boolean'],
-            'category_id'  => ['required', 'exists:categories,id'],
-            'ingredients'  => ['array'],
-            'ingredients.*' => ['exists:ingredients,id'],
-            'labels'       => ['array'],
-            'labels.*'     => ['exists:labels,id'],
-        ]);
+        $validated = $request->validate($this->rules());
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('products', 'public');
+        } else {
+            unset($validated['image']);
+        }
 
         $product = Product::create($validated);
         $product->ingredients()->sync($validated['ingredients'] ?? []);
@@ -65,19 +78,16 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate([
-            'name'         => ['required', 'string', 'max:255'],
-            'description'  => ['nullable', 'string'],
-            'image'        => ['nullable', 'string', 'max:500'],
-            'price'        => ['required', 'integer', 'min:0'],
-            'sort_order'   => ['required', 'integer', 'min:0'],
-            'is_available' => ['boolean'],
-            'category_id'  => ['required', 'exists:categories,id'],
-            'ingredients'  => ['array'],
-            'ingredients.*' => ['exists:ingredients,id'],
-            'labels'       => ['array'],
-            'labels.*'     => ['exists:labels,id'],
-        ]);
+        $validated = $request->validate($this->rules());
+
+        if ($request->hasFile('image')) {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $validated['image'] = $request->file('image')->store('products', 'public');
+        } else {
+            unset($validated['image']);
+        }
 
         $product->update($validated);
         $product->ingredients()->sync($validated['ingredients'] ?? []);
