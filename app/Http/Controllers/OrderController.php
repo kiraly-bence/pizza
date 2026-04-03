@@ -22,8 +22,8 @@ class OrderController extends Controller
                 'street' => $user->street,
                 'note'   => $user->note,
             ],
-            'deliveryFee' => OrderService::DELIVERY_FEE,
-            'serviceFee'  => OrderService::SERVICE_FEE,
+            'deliveryFee' => $this->orderService->deliveryFee(),
+            'serviceFee'  => $this->orderService->serviceFee(),
         ]);
     }
 

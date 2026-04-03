@@ -6,6 +6,7 @@ use App\Models\Coupon;
 use App\Models\CouponUsage;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -13,6 +14,16 @@ class OrderService
 {
     const DELIVERY_FEE = 990;
     const SERVICE_FEE  = 199;
+
+    public function deliveryFee(): int
+    {
+        return (int) Setting::get('delivery_fee', self::DELIVERY_FEE);
+    }
+
+    public function serviceFee(): int
+    {
+        return (int) Setting::get('service_fee', self::SERVICE_FEE);
+    }
 
     public function place(User $user, array $data): Order
     {
@@ -39,9 +50,11 @@ class OrderService
             }
         }
 
-        $total = max(0, $subtotal + self::DELIVERY_FEE + self::SERVICE_FEE - $discountAmount);
+        $deliveryFee = $this->deliveryFee();
+        $serviceFee  = $this->serviceFee();
+        $total       = max(0, $subtotal + $deliveryFee + $serviceFee - $discountAmount);
 
-        return DB::transaction(function () use ($user, $data, $itemsData, $subtotal, $total, $coupon, $discountAmount) {
+        return DB::transaction(function () use ($user, $data, $itemsData, $subtotal, $total, $coupon, $discountAmount, $deliveryFee, $serviceFee) {
             $order = Order::create([
                 'user_id'          => $user->id,
                 'coupon_id'        => $coupon?->id,
@@ -52,8 +65,8 @@ class OrderService
                 'note'             => $data['note'] ?? null,
                 'delivery_message' => $data['delivery_message'] ?? null,
                 'subtotal'         => $subtotal,
-                'delivery_fee'     => self::DELIVERY_FEE,
-                'service_fee'      => self::SERVICE_FEE,
+                'delivery_fee'     => $deliveryFee,
+                'service_fee'      => $serviceFee,
                 'discount_amount'  => $discountAmount,
                 'total'            => $total,
             ]);

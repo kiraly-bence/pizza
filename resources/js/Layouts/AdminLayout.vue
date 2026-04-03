@@ -34,6 +34,11 @@
                     <span class="nav-icon">▪</span> Kuponok
                 </a>
 
+                <p class="nav-section-label">Rendszer</p>
+                <a href="/admin/settings" class="nav-item" :class="{ active: isActive('/admin/settings') }">
+                    <span class="nav-icon">▪</span> Beállítások
+                </a>
+
                 <p class="nav-section-label">Felhasználók</p>
                 <a href="/admin/users" class="nav-item" :class="{ active: isActive('/admin/users') }">
                     <span class="nav-icon">▪</span> Felhasználók

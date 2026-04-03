@@ -278,5 +278,8 @@ class DatabaseSeeder extends Seeder
             $ingredients['olívabogyó']->id,
         ]);
         $gorogSalata->labels()->attach([$labelVege->id, $labelGlutenFree->id]);
+
+        // --- Settings ---
+        $this->call(SettingsSeeder::class);
     }
 }
