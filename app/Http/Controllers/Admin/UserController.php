@@ -30,4 +30,22 @@ class UserController extends Controller
 
         return back();
     }
+
+    public function ban(User $user)
+    {
+        try {
+            $this->userService->ban($user, auth()->id());
+        } catch (\RuntimeException $e) {
+            return back()->withErrors(['ban' => $e->getMessage()]);
+        }
+
+        return back();
+    }
+
+    public function unban(User $user)
+    {
+        $this->userService->unban($user);
+
+        return back();
+    }
 }

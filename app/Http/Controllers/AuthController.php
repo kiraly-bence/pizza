@@ -20,7 +20,14 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        if (!$this->authService->attempt($request->only('email', 'password'), $request)) {
+        $result = $this->authService->attempt($request->only('email', 'password'), $request);
+
+        if ($result === 'banned') {
+            return back()->withErrors(['email' => 'Ez a fiók le van tiltva.'])
+                         ->withInput($request->only('email'));
+        }
+
+        if (!$result) {
             return back()->withErrors(['email' => 'Hibás e-mail cím vagy jelszó.'])
                          ->withInput($request->only('email'));
         }

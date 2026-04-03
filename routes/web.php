@@ -55,6 +55,8 @@ Route::prefix('admin')
         // Users
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
         Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
+        Route::patch('/users/{user}/ban', [AdminUserController::class, 'ban'])->name('users.ban');
+        Route::patch('/users/{user}/unban', [AdminUserController::class, 'unban'])->name('users.unban');
 
         // Categories
         Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');

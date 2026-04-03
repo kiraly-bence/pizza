@@ -23,10 +23,15 @@ class AuthService
         return $user;
     }
 
-    public function attempt(array $credentials, Request $request): bool
+    public function attempt(array $credentials, Request $request): bool|string
     {
         if (!Auth::attempt($credentials)) {
             return false;
+        }
+
+        if (Auth::user()->isBanned()) {
+            Auth::logout();
+            return 'banned';
         }
 
         $request->session()->regenerate();
