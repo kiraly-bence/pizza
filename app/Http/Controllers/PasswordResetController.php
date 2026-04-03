@@ -4,16 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Services\PasswordResetService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Inertia\Inertia;
 
 class PasswordResetController extends Controller
 {
+    public function __construct(private PasswordResetService $passwordResetService) {}
+
     public function sendLink(ForgotPasswordRequest $request)
     {
-        Password::sendResetLink($request->only('email'));
+        $this->passwordResetService->sendResetLink($request->email);
 
         return back()->with('forgot_status', 'sent');
     }
@@ -28,12 +30,7 @@ class PasswordResetController extends Controller
 
     public function reset(ResetPasswordRequest $request)
     {
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill(['password' => Hash::make($password)])->save();
-            }
-        );
+        $status = $this->passwordResetService->reset($request->validated());
 
         if ($status === Password::PASSWORD_RESET) {
             return redirect()->route('home')->with('reset_success', true);

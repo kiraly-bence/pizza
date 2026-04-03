@@ -3,15 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Order;
-use App\Models\Product;
-use Illuminate\Support\Facades\DB;
+use App\Services\OrderService;
 use Inertia\Inertia;
 
 class OrderController extends Controller
 {
-    const DELIVERY_FEE = 990;
-    const SERVICE_FEE  = 199;
+    public function __construct(private OrderService $orderService) {}
 
     public function checkout()
     {
@@ -25,8 +22,8 @@ class OrderController extends Controller
                 'street' => $user->street,
                 'note'   => $user->note,
             ],
-            'deliveryFee' => self::DELIVERY_FEE,
-            'serviceFee'  => self::SERVICE_FEE,
+            'deliveryFee' => OrderService::DELIVERY_FEE,
+            'serviceFee'  => OrderService::SERVICE_FEE,
         ]);
     }
 
@@ -34,81 +31,15 @@ class OrderController extends Controller
     {
         $user = auth()->user();
 
-        $orders = Order::where('user_id', $user->id)
-            ->with('items')
-            ->latest()
-            ->get()
-            ->map(fn($order) => [
-                'id'             => $order->id,
-                'status'         => $order->status,
-                'payment_method' => $order->payment_method,
-                'address'        => trim("{$order->zip} {$order->city}, {$order->street}" . ($order->note ? ", {$order->note}" : '')),
-                'subtotal'       => $order->subtotal,
-                'delivery_fee'   => $order->delivery_fee,
-                'service_fee'    => $order->service_fee,
-                'total'          => $order->total,
-                'created_at'     => $order->created_at->format('Y. m. d. H:i'),
-                'items'          => $order->items->map(fn($item) => [
-                    'name'     => $item->name,
-                    'price'    => $item->price,
-                    'quantity' => $item->quantity,
-                ]),
-            ]);
-
         return Inertia::render('Orders', [
             'auth'   => ['user' => $user],
-            'orders' => $orders,
+            'orders' => $this->orderService->forUser($user),
         ]);
     }
 
     public function store(PlaceOrderRequest $request)
     {
-        $validated = $request->validated();
-        $user      = auth()->user();
-
-        // Fetch current prices from DB — never trust client-sent prices
-        $productIds = collect($validated['items'])->pluck('id');
-        $products   = Product::whereIn('id', $productIds)->get()->keyBy('id');
-
-        $itemsData = collect($validated['items'])->map(function ($item) use ($products) {
-            $product = $products->get($item['id']);
-            return [
-                'product_id' => $product->id,
-                'name'       => $product->name,
-                'price'      => $product->price,
-                'quantity'   => $item['quantity'],
-            ];
-        });
-
-        $subtotal = $itemsData->sum(fn($i) => $i['price'] * $i['quantity']);
-        $total    = $subtotal + self::DELIVERY_FEE + self::SERVICE_FEE;
-
-        DB::transaction(function () use ($validated, $user, $itemsData, $subtotal, $total) {
-            $order = Order::create([
-                'user_id'        => $user->id,
-                'payment_method' => $validated['payment_method'],
-                'zip'            => $validated['zip'],
-                'city'           => $validated['city'],
-                'street'         => $validated['street'],
-                'note'             => $validated['note'] ?? null,
-                'delivery_message' => $validated['delivery_message'] ?? null,
-                'subtotal'       => $subtotal,
-                'delivery_fee'   => self::DELIVERY_FEE,
-                'service_fee'    => self::SERVICE_FEE,
-                'total'          => $total,
-            ]);
-
-            $order->items()->createMany($itemsData->toArray());
-
-            if (!empty($validated['save_address'])) {
-                $user->update([
-                    'zip'    => $validated['zip'],
-                    'city'   => $validated['city'],
-                    'street' => $validated['street'],
-                    'note'   => $validated['note'] ?? null,
-                ]);
-            }
-        });
+        $this->orderService->place(auth()->user(), $request->validated());
 
         return redirect()->route('home')->with('order_success', true);
     }

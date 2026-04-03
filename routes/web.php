@@ -12,6 +12,8 @@ use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\IngredientController as AdminIngredientController;
 use App\Http\Controllers\Admin\LabelController as AdminLabelController;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\CouponController;
 use Illuminate\Support\Facades\Route;
 
 // Főoldal
@@ -26,6 +28,9 @@ Route::post('/logout',   [AuthController::class, 'logout'])->name('logout')->mid
 Route::post('/forgot-password', [PasswordResetController::class, 'sendLink'])->name('password.email');
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
+
+// Coupon validation (auth required)
+Route::middleware('auth')->post('/coupon/validate', [CouponController::class, 'validate'])->name('coupon.validate');
 
 // Checkout & profile (auth required)
 Route::middleware('auth')->group(function () {
@@ -74,4 +79,11 @@ Route::prefix('admin')
         Route::post('/labels', [AdminLabelController::class, 'store'])->name('labels.store');
         Route::patch('/labels/{label}', [AdminLabelController::class, 'update'])->name('labels.update');
         Route::delete('/labels/{label}', [AdminLabelController::class, 'destroy'])->name('labels.destroy');
+
+        // Coupons
+        Route::get('/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');
+        Route::post('/coupons', [AdminCouponController::class, 'store'])->name('coupons.store');
+        Route::patch('/coupons/{coupon}', [AdminCouponController::class, 'update'])->name('coupons.update');
+        Route::delete('/coupons/{coupon}', [AdminCouponController::class, 'destroy'])->name('coupons.destroy');
+        Route::patch('/coupons/{coupon}/toggle', [AdminCouponController::class, 'toggle'])->name('coupons.toggle');
     });

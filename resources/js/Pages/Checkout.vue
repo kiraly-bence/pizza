@@ -157,12 +157,44 @@
                                 <span>Szolgáltatási díj</span>
                                 <span>{{ formatPrice(serviceFee) }} Ft</span>
                             </div>
+                            <div class="summary-row summary-discount" v-if="discountAmount > 0">
+                                <span>Kupon kedvezmény</span>
+                                <span class="discount-value">−{{ formatPrice(discountAmount) }} Ft</span>
+                            </div>
 
                             <hr class="summary-divider">
 
                             <div class="summary-row summary-total">
                                 <span>Fizetendő összeg</span>
                                 <span>{{ formatPrice(grandTotal) }} Ft</span>
+                            </div>
+
+                            <!-- Coupon input -->
+                            <div class="coupon-box mt-3">
+                                <div class="coupon-input-row">
+                                    <input
+                                        v-model="couponCode"
+                                        type="text"
+                                        class="form-control coupon-input"
+                                        :class="{ 'is-invalid': couponError, 'is-valid': couponValid }"
+                                        placeholder="Kuponkód"
+                                        :disabled="couponValid"
+                                        @keyup.enter="applyCoupon"
+                                    >
+                                    <button
+                                        v-if="!couponValid"
+                                        class="btn coupon-btn"
+                                        :disabled="applyingCoupon || !couponCode"
+                                        @click="applyCoupon"
+                                    >
+                                        {{ applyingCoupon ? '...' : 'Beváltás' }}
+                                    </button>
+                                    <button v-else class="btn coupon-remove-btn" @click="removeCoupon">
+                                        ✕
+                                    </button>
+                                </div>
+                                <div class="coupon-feedback invalid" v-if="couponError">{{ couponError }}</div>
+                                <div class="coupon-feedback valid" v-if="couponValid">Kupon sikeresen alkalmazva!</div>
                             </div>
 
                             <button
@@ -185,10 +217,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { useCart } from '@/composables/useCart'
+import axios from 'axios'
 
 defineOptions({ layout: null })
 
@@ -201,7 +234,53 @@ const props = defineProps({
 
 const { items: cartItems, cartTotal, clearCart } = useCart()
 
-const grandTotal = computed(() => cartTotal.value + props.deliveryFee + props.serviceFee)
+// Coupon state
+const couponCode     = ref('')
+const couponValid    = ref(false)
+const couponError    = ref('')
+const applyingCoupon = ref(false)
+const appliedCoupon  = ref(null) // { discount_type, discount_value }
+
+const discountAmount = computed(() => {
+    if (!appliedCoupon.value) return 0
+    if (appliedCoupon.value.discount_type === 'percentage') {
+        return Math.round(cartTotal.value * appliedCoupon.value.discount_value / 100)
+    }
+    return appliedCoupon.value.discount_value
+})
+
+const grandTotal = computed(() =>
+    Math.max(0, cartTotal.value + props.deliveryFee + props.serviceFee - discountAmount.value)
+)
+
+const applyCoupon = async () => {
+    if (!couponCode.value) return
+    applyingCoupon.value = true
+    couponError.value = ''
+    try {
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+        const { data } = await axios.post('/coupon/validate', { code: couponCode.value }, {
+            headers: { 'X-CSRF-TOKEN': csrf },
+        })
+        if (data.valid) {
+            appliedCoupon.value = { discount_type: data.discount_type, discount_value: data.discount_value }
+            couponValid.value = true
+        } else {
+            couponError.value = data.message
+        }
+    } catch {
+        couponError.value = 'Hiba történt. Próbáld újra.'
+    } finally {
+        applyingCoupon.value = false
+    }
+}
+
+const removeCoupon = () => {
+    couponCode.value  = ''
+    couponValid.value = false
+    couponError.value = ''
+    appliedCoupon.value = null
+}
 
 const form = useForm({
     payment_method:   'cash',
@@ -216,7 +295,8 @@ const form = useForm({
 const submit = () => {
     form.transform(data => ({
         ...data,
-        items: cartItems.value.map(i => ({ id: i.id, quantity: i.quantity })),
+        items:       cartItems.value.map(i => ({ id: i.id, quantity: i.quantity })),
+        coupon_code: couponValid.value ? couponCode.value : null,
     })).post('/orders', {
         onSuccess: () => clearCart(),
     })
@@ -403,4 +483,57 @@ const formatPrice = (price) => Number(price).toLocaleString('hu-HU')
 }
 
 .empty-cart-notice a { color: #e63946; }
+
+/* Coupon */
+.coupon-box { border-top: 1px dashed #e5e5e5; padding-top: 0.85rem; }
+
+.coupon-input-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.coupon-input {
+    font-family: monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+}
+
+.coupon-btn {
+    white-space: nowrap;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.15s;
+}
+
+.coupon-btn:hover:not(:disabled) { background: #333; color: #fff; }
+.coupon-btn:disabled { opacity: 0.5; color: #fff; }
+
+.coupon-remove-btn {
+    background: #f3f4f6;
+    border: none;
+    border-radius: 8px;
+    padding: 0 0.75rem;
+    color: #888;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+}
+
+.coupon-remove-btn:hover { background: #fee2e2; color: #e63946; }
+
+.coupon-feedback {
+    font-size: 0.8rem;
+    margin-top: 0.35rem;
+}
+
+.coupon-feedback.invalid { color: #e63946; }
+.coupon-feedback.valid   { color: #16a34a; }
+
+.summary-discount { color: #16a34a; }
+.discount-value   { font-weight: 600; color: #16a34a; }
 </style>

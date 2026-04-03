@@ -24,6 +24,7 @@ class PlaceOrderRequest extends FormRequest
             'note'             => ['nullable', 'string', 'max:255'],
             'delivery_message' => ['nullable', 'string', 'max:1000'],
             'save_address'     => ['boolean'],
+            'coupon_code'      => ['nullable', 'string', 'max:50'],
         ];
     }
 

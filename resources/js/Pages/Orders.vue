@@ -59,6 +59,10 @@
                                     <span>Szolgáltatási díj</span>
                                     <span>{{ formatPrice(order.service_fee) }} Ft</span>
                                 </div>
+                                <div class="order-summary-row order-summary-discount" v-if="order.discount_amount > 0">
+                                    <span>Kupon kedvezmény</span>
+                                    <span>−{{ formatPrice(order.discount_amount) }} Ft</span>
+                                </div>
                                 <div class="order-summary-row order-summary-total">
                                     <span>Összesen</span>
                                     <span>{{ formatPrice(order.total) }} Ft</span>
@@ -291,6 +295,8 @@ const statusClass = (status) => ({
     font-size: 0.85rem;
     color: #666;
 }
+
+.order-summary-discount { color: #16a34a; font-weight: 600; }
 
 .order-summary-total {
     font-weight: 700;

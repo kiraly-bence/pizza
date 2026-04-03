@@ -302,7 +302,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useForm, router, usePage } from '@inertiajs/vue3'
 import { Modal } from 'bootstrap'
 import { useCart } from '@/composables/useCart'
@@ -316,16 +316,24 @@ const props = defineProps({
 
 const page = usePage()
 const authTab = ref('login')
-const forgotSent = computed(() => page.props.flash?.forgot_status === 'sent')
+const forgotSent = ref(page.props.flash?.forgot_status === 'sent')
+
+watch(() => page.props.flash?.forgot_status, (val) => {
+    if (val === 'sent') forgotSent.value = true
+})
 
 const orderSuccess = ref(!!page.props.flash?.order_success)
 const dismissOrder = () => { orderSuccess.value = false }
 
 const switchTab = (tab) => {
     authTab.value = tab
+    if (tab !== 'forgot') {
+        forgotSent.value = false
+        forgotForm.email = ''
+        forgotForm.clearErrors()
+    }
     loginForm.clearErrors()
     registerForm.clearErrors()
-    forgotForm.clearErrors()
 }
 
 const initials = computed(() => {

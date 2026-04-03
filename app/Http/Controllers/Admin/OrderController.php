@@ -5,44 +5,24 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateOrderStatusRequest;
 use App\Models\Order;
+use App\Services\Admin\OrderService;
 use Inertia\Inertia;
 
 class OrderController extends Controller
 {
+    public function __construct(private OrderService $orderService) {}
+
     public function index()
     {
-        $orders = Order::with(['user', 'items'])
-            ->latest()
-            ->get()
-            ->map(fn($o) => [
-                'id'               => $o->id,
-                'user'             => ['name' => $o->user->name, 'email' => $o->user->email],
-                'status'           => $o->status,
-                'payment_method'   => $o->payment_method,
-                'address'          => trim("{$o->zip} {$o->city}, {$o->street}" . ($o->note ? ", {$o->note}" : '')),
-                'delivery_message' => $o->delivery_message,
-                'items_count'      => $o->items->sum('quantity'),
-                'subtotal'         => $o->subtotal,
-                'delivery_fee'     => $o->delivery_fee,
-                'service_fee'      => $o->service_fee,
-                'total'            => $o->total,
-                'items'            => $o->items->map(fn($i) => [
-                    'name'     => $i->name,
-                    'price'    => $i->price,
-                    'quantity' => $i->quantity,
-                ]),
-                'created_at' => $o->created_at->format('Y. m. d. H:i'),
-            ]);
-
         return Inertia::render('Admin/Orders', [
             'auth'   => ['user' => auth()->user()],
-            'orders' => $orders,
+            'orders' => $this->orderService->all(),
         ]);
     }
 
     public function updateStatus(UpdateOrderStatusRequest $request, Order $order)
     {
-        $order->update($request->validated());
+        $this->orderService->updateStatus($order, $request->validated('status'));
 
         return back();
     }

@@ -8,6 +8,7 @@ class Order extends Model
 {
     protected $fillable = [
         'user_id',
+        'coupon_id',
         'status',
         'payment_method',
         'zip',
@@ -18,6 +19,7 @@ class Order extends Model
         'subtotal',
         'delivery_fee',
         'service_fee',
+        'discount_amount',
         'total',
     ];
 

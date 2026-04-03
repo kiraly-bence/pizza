@@ -4,45 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
+    public function __construct(private AuthService $authService) {}
+
     public function register(RegisterRequest $request)
     {
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => 'user',
-        ]);
-
-        Auth::login($user);
+        $this->authService->register($request->validated());
 
         return redirect()->route('home');
     }
 
     public function login(LoginRequest $request)
     {
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return back()->withErrors([
-                'email' => 'Hibás e-mail cím vagy jelszó.',
-            ])->withInput($request->only('email'));
+        if (!$this->authService->attempt($request->only('email', 'password'), $request)) {
+            return back()->withErrors(['email' => 'Hibás e-mail cím vagy jelszó.'])
+                         ->withInput($request->only('email'));
         }
-
-        $request->session()->regenerate();
 
         return redirect()->route('home');
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $this->authService->logout($request);
 
         return redirect()->route('home');
     }

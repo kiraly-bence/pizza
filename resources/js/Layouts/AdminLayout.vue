@@ -30,6 +30,9 @@
                 <a href="/admin/labels" class="nav-item" :class="{ active: isActive('/admin/labels') }">
                     <span class="nav-icon">▪</span> Labelek
                 </a>
+                <a href="/admin/coupons" class="nav-item" :class="{ active: isActive('/admin/coupons') }">
+                    <span class="nav-icon">▪</span> Kuponok
+                </a>
 
                 <p class="nav-section-label">Felhasználók</p>
                 <a href="/admin/users" class="nav-item" :class="{ active: isActive('/admin/users') }">
