@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateOrderStatusRequest;
 use App\Models\Order;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class OrderController extends Controller
@@ -15,18 +15,18 @@ class OrderController extends Controller
             ->latest()
             ->get()
             ->map(fn($o) => [
-                'id'             => $o->id,
-                'user'           => ['name' => $o->user->name, 'email' => $o->user->email],
-                'status'         => $o->status,
-                'payment_method' => $o->payment_method,
-                'address'        => trim("{$o->zip} {$o->city}, {$o->street}" . ($o->note ? ", {$o->note}" : '')),
+                'id'               => $o->id,
+                'user'             => ['name' => $o->user->name, 'email' => $o->user->email],
+                'status'           => $o->status,
+                'payment_method'   => $o->payment_method,
+                'address'          => trim("{$o->zip} {$o->city}, {$o->street}" . ($o->note ? ", {$o->note}" : '')),
                 'delivery_message' => $o->delivery_message,
-                'items_count'    => $o->items->sum('quantity'),
-                'subtotal'       => $o->subtotal,
-                'delivery_fee'   => $o->delivery_fee,
-                'service_fee'    => $o->service_fee,
-                'total'          => $o->total,
-                'items'          => $o->items->map(fn($i) => [
+                'items_count'      => $o->items->sum('quantity'),
+                'subtotal'         => $o->subtotal,
+                'delivery_fee'     => $o->delivery_fee,
+                'service_fee'      => $o->service_fee,
+                'total'            => $o->total,
+                'items'            => $o->items->map(fn($i) => [
                     'name'     => $i->name,
                     'price'    => $i->price,
                     'quantity' => $i->quantity,
@@ -40,13 +40,9 @@ class OrderController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, Order $order)
+    public function updateStatus(UpdateOrderStatusRequest $request, Order $order)
     {
-        $request->validate([
-            'status' => ['required', 'in:pending,confirmed,preparing,delivering,delivered,cancelled'],
-        ]);
-
-        $order->update(['status' => $request->status]);
+        $order->update($request->validated());
 
         return back();
     }

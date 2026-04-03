@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateUserRoleRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class UserController extends Controller
@@ -26,18 +26,13 @@ class UserController extends Controller
         ]);
     }
 
-    public function updateRole(Request $request, User $user)
+    public function updateRole(UpdateUserRoleRequest $request, User $user)
     {
-        $request->validate([
-            'role' => ['required', 'in:user,admin'],
-        ]);
-
-        // Prevent removing your own admin role
         if ($user->id === auth()->id() && $request->role !== 'admin') {
             return back()->withErrors(['role' => 'Saját admin jogosultságodat nem vonhatod meg.']);
         }
 
-        $user->update(['role' => $request->role]);
+        $user->update($request->validated());
 
         return back();
     }

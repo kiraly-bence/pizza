@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SaveCategoryRequest;
 use App\Models\Category;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
@@ -19,26 +19,16 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(SaveCategoryRequest $request)
     {
-        $validated = $request->validate([
-            'name'       => ['required', 'string', 'max:100'],
-            'sort_order' => ['required', 'integer', 'min:0'],
-        ]);
-
-        Category::create($validated);
+        Category::create($request->validated());
 
         return back();
     }
 
-    public function update(Request $request, Category $category)
+    public function update(SaveCategoryRequest $request, Category $category)
     {
-        $validated = $request->validate([
-            'name'       => ['required', 'string', 'max:100'],
-            'sort_order' => ['required', 'integer', 'min:0'],
-        ]);
-
-        $category->update($validated);
+        $category->update($request->validated());
 
         return back();
     }

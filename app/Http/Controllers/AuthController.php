@@ -2,34 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $validated = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Password::min(8)],
-        ], [
-            'name.required'      => 'A név megadása kötelező.',
-            'email.required'     => 'Az e-mail cím megadása kötelező.',
-            'email.email'        => 'Érvényes e-mail címet adj meg.',
-            'email.unique'       => 'Ez az e-mail cím már foglalt.',
-            'password.required'  => 'A jelszó megadása kötelező.',
-            'password.confirmed' => 'A két jelszó nem egyezik meg.',
-            'password.min'       => 'A jelszónak legalább 8 karakter hosszúnak kell lennie.',
-        ]);
-
         $user = User::create([
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
             'role'     => 'user',
         ]);
 
@@ -38,18 +25,9 @@ class AuthController extends Controller
         return redirect()->route('home');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $validated = $request->validate([
-            'email'    => ['required', 'email'],
-            'password' => ['required'],
-        ], [
-            'email.required'    => 'Az e-mail cím megadása kötelező.',
-            'email.email'       => 'Érvényes e-mail címet adj meg.',
-            'password.required' => 'A jelszó megadása kötelező.',
-        ]);
-
-        if (!Auth::attempt(['email' => $validated['email'], 'password' => $validated['password']])) {
+        if (!Auth::attempt($request->only('email', 'password'))) {
             return back()->withErrors([
                 'email' => 'Hibás e-mail cím vagy jelszó.',
             ])->withInput($request->only('email'));

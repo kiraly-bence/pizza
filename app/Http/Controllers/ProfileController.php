@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\UpdateAddressRequest;
 use Inertia\Inertia;
 
 class ProfileController extends Controller
@@ -12,7 +12,7 @@ class ProfileController extends Controller
         $user = auth()->user();
 
         return Inertia::render('Profile', [
-            'auth' => ['user' => $user],
+            'auth'         => ['user' => $user],
             'savedAddress' => [
                 'zip'    => $user->zip,
                 'city'   => $user->city,
@@ -22,20 +22,9 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function updateAddress(Request $request)
+    public function updateAddress(UpdateAddressRequest $request)
     {
-        $validated = $request->validate([
-            'zip'    => ['nullable', 'string', 'max:10'],
-            'city'   => ['nullable', 'string', 'max:100'],
-            'street' => ['nullable', 'string', 'max:255'],
-            'note'   => ['nullable', 'string', 'max:255'],
-        ], [
-            'zip.max'    => 'Az irányítószám legfeljebb 10 karakter lehet.',
-            'city.max'   => 'A város neve legfeljebb 100 karakter lehet.',
-            'street.max' => 'Az utca, házszám legfeljebb 255 karakter lehet.',
-        ]);
-
-        auth()->user()->update($validated);
+        auth()->user()->update($request->validated());
 
         return back()->with('address_saved', true);
     }

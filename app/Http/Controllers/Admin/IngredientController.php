@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SaveIngredientRequest;
 use App\Models\Ingredient;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class IngredientController extends Controller
@@ -19,23 +19,24 @@ class IngredientController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(SaveIngredientRequest $request)
     {
-        $request->validate(['name' => ['required', 'string', 'max:100', 'unique:ingredients,name']]);
-        Ingredient::create($request->only('name'));
+        Ingredient::create($request->validated());
+
         return back();
     }
 
-    public function update(Request $request, Ingredient $ingredient)
+    public function update(SaveIngredientRequest $request, Ingredient $ingredient)
     {
-        $request->validate(['name' => ['required', 'string', 'max:100', 'unique:ingredients,name,' . $ingredient->id]]);
-        $ingredient->update($request->only('name'));
+        $ingredient->update($request->validated());
+
         return back();
     }
 
     public function destroy(Ingredient $ingredient)
     {
         $ingredient->delete();
+
         return back();
     }
 }

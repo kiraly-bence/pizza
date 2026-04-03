@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SaveProductRequest;
 use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Label;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -42,26 +42,9 @@ class ProductController extends Controller
         ]);
     }
 
-    private function rules(): array
+    public function store(SaveProductRequest $request)
     {
-        return [
-            'name'          => ['required', 'string', 'max:255'],
-            'description'   => ['nullable', 'string'],
-            'image'         => ['nullable', 'image', 'max:4096'],
-            'price'         => ['required', 'integer', 'min:0'],
-            'sort_order'    => ['required', 'integer', 'min:0'],
-            'is_available'  => ['boolean'],
-            'category_id'   => ['required', 'exists:categories,id'],
-            'ingredients'   => ['array'],
-            'ingredients.*' => ['exists:ingredients,id'],
-            'labels'        => ['array'],
-            'labels.*'      => ['exists:labels,id'],
-        ];
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate($this->rules());
+        $validated = $request->validated();
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
@@ -76,9 +59,9 @@ class ProductController extends Controller
         return back();
     }
 
-    public function update(Request $request, Product $product)
+    public function update(SaveProductRequest $request, Product $product)
     {
-        $validated = $request->validate($this->rules());
+        $validated = $request->validated();
 
         if ($request->hasFile('image')) {
             if ($product->image) {

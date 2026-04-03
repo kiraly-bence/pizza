@@ -2,23 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\Rules\Password as PasswordRule;
 use Inertia\Inertia;
 
 class PasswordResetController extends Controller
 {
-    public function sendLink(Request $request)
+    public function sendLink(ForgotPasswordRequest $request)
     {
-        $request->validate([
-            'email' => ['required', 'email'],
-        ], [
-            'email.required' => 'Az e-mail cím megadása kötelező.',
-            'email.email'    => 'Érvényes e-mail címet adj meg.',
-        ]);
-
         Password::sendResetLink($request->only('email'));
 
         return back()->with('forgot_status', 'sent');
@@ -32,20 +26,8 @@ class PasswordResetController extends Controller
         ]);
     }
 
-    public function reset(Request $request)
+    public function reset(ResetPasswordRequest $request)
     {
-        $request->validate([
-            'token'    => ['required'],
-            'email'    => ['required', 'email'],
-            'password' => ['required', 'confirmed', PasswordRule::min(8)],
-        ], [
-            'email.required'     => 'Az e-mail cím megadása kötelező.',
-            'email.email'        => 'Érvényes e-mail címet adj meg.',
-            'password.required'  => 'A jelszó megadása kötelező.',
-            'password.confirmed' => 'A két jelszó nem egyezik meg.',
-            'password.min'       => 'A jelszónak legalább 8 karakter hosszúnak kell lennie.',
-        ]);
-
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {

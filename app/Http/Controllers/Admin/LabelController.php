@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SaveLabelRequest;
 use App\Models\Label;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class LabelController extends Controller
@@ -19,29 +19,24 @@ class LabelController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(SaveLabelRequest $request)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'type' => ['required', 'in:primary,secondary'],
-        ]);
-        Label::create($request->only('name', 'type'));
+        Label::create($request->validated());
+
         return back();
     }
 
-    public function update(Request $request, Label $label)
+    public function update(SaveLabelRequest $request, Label $label)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'type' => ['required', 'in:primary,secondary'],
-        ]);
-        $label->update($request->only('name', 'type'));
+        $label->update($request->validated());
+
         return back();
     }
 
     public function destroy(Label $label)
     {
         $label->delete();
+
         return back();
     }
 }
