@@ -12,6 +12,11 @@
                     <span class="nav-icon">▪</span> Dashboard
                 </a>
 
+                <p class="nav-section-label">Rendelések</p>
+                <a href="/admin/orders" class="nav-item" :class="{ active: isActive('/admin/orders') }">
+                    <span class="nav-icon">▪</span> Rendelések
+                </a>
+
                 <p class="nav-section-label">Menü kezelés</p>
                 <a href="/admin/categories" class="nav-item" :class="{ active: isActive('/admin/categories') }">
                     <span class="nav-icon">▪</span> Kategóriák

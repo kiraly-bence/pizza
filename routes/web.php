@@ -6,6 +6,12 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\IngredientController as AdminIngredientController;
+use App\Http\Controllers\Admin\LabelController as AdminLabelController;
 use Illuminate\Support\Facades\Route;
 
 // Főoldal
@@ -36,4 +42,36 @@ Route::prefix('admin')
     ->middleware(['auth', 'admin'])
     ->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Orders
+        Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+        Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
+
+        // Users
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
+
+        // Categories
+        Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
+        Route::patch('/categories/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
+
+        // Products
+        Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
+        Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
+        Route::patch('/products/{product}', [AdminProductController::class, 'update'])->name('products.update');
+        Route::delete('/products/{product}', [AdminProductController::class, 'destroy'])->name('products.destroy');
+
+        // Ingredients
+        Route::get('/ingredients', [AdminIngredientController::class, 'index'])->name('ingredients.index');
+        Route::post('/ingredients', [AdminIngredientController::class, 'store'])->name('ingredients.store');
+        Route::patch('/ingredients/{ingredient}', [AdminIngredientController::class, 'update'])->name('ingredients.update');
+        Route::delete('/ingredients/{ingredient}', [AdminIngredientController::class, 'destroy'])->name('ingredients.destroy');
+
+        // Labels
+        Route::get('/labels', [AdminLabelController::class, 'index'])->name('labels.index');
+        Route::post('/labels', [AdminLabelController::class, 'store'])->name('labels.store');
+        Route::patch('/labels/{label}', [AdminLabelController::class, 'update'])->name('labels.update');
+        Route::delete('/labels/{label}', [AdminLabelController::class, 'destroy'])->name('labels.destroy');
     });

@@ -3,24 +3,51 @@
         <div class="row g-4 mb-4">
             <div class="col-6 col-lg-3">
                 <div class="stat-card">
-                    <p class="stat-label">Kategóriák</p>
-                    <p class="stat-value">{{ stats.categories }}</p>
+                    <p class="stat-label">Összes rendelés</p>
+                    <p class="stat-value">{{ stats.orders }}</p>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card accent">
+                    <p class="stat-label">Függőben</p>
+                    <p class="stat-value">{{ stats.pending }}</p>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
                 <div class="stat-card">
+                    <p class="stat-label">Felhasználók</p>
+                    <p class="stat-value">{{ stats.users }}</p>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card green">
+                    <p class="stat-label">Bevétel</p>
+                    <p class="stat-value">{{ formatPrice(stats.revenue) }} Ft</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-6 col-lg-3">
+                <div class="stat-card small">
                     <p class="stat-label">Termékek</p>
                     <p class="stat-value">{{ stats.products }}</p>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
-                <div class="stat-card">
+                <div class="stat-card small">
+                    <p class="stat-label">Kategóriák</p>
+                    <p class="stat-value">{{ stats.categories }}</p>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card small">
                     <p class="stat-label">Hozzávalók</p>
                     <p class="stat-value">{{ stats.ingredients }}</p>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
-                <div class="stat-card">
+                <div class="stat-card small">
                     <p class="stat-label">Labelek</p>
                     <p class="stat-value">{{ stats.labels }}</p>
                 </div>
@@ -31,21 +58,21 @@
             <p class="ql-title">Gyors műveletek</p>
             <div class="row g-3">
                 <div class="col-12 col-md-4">
+                    <a href="/admin/orders" class="quick-card">
+                        <span class="quick-icon">📋</span>
+                        <span>Rendelések kezelése</span>
+                    </a>
+                </div>
+                <div class="col-12 col-md-4">
                     <a href="/admin/products" class="quick-card">
                         <span class="quick-icon">🍕</span>
                         <span>Termékek kezelése</span>
                     </a>
                 </div>
                 <div class="col-12 col-md-4">
-                    <a href="/admin/categories" class="quick-card">
-                        <span class="quick-icon">📂</span>
-                        <span>Kategóriák kezelése</span>
-                    </a>
-                </div>
-                <div class="col-12 col-md-4">
-                    <a href="/admin/labels" class="quick-card">
-                        <span class="quick-icon">🏷️</span>
-                        <span>Labelek kezelése</span>
+                    <a href="/admin/users" class="quick-card">
+                        <span class="quick-icon">👥</span>
+                        <span>Felhasználók kezelése</span>
                     </a>
                 </div>
             </div>
@@ -60,6 +87,8 @@ defineProps({
     auth:  { type: Object, required: true },
     stats: { type: Object, required: true },
 })
+
+const formatPrice = (v) => Number(v).toLocaleString('hu-HU')
 </script>
 
 <style scoped>
@@ -69,6 +98,9 @@ defineProps({
     border-radius: 12px;
     padding: 1.25rem 1.5rem;
 }
+.stat-card.accent { border-left: 4px solid #f59e0b; }
+.stat-card.green  { border-left: 4px solid #10b981; }
+.stat-card.small .stat-value { font-size: 1.6rem; }
 
 .stat-label {
     font-size: 0.8rem;
@@ -117,11 +149,6 @@ defineProps({
     transition: all 0.15s;
 }
 
-.quick-card:hover {
-    border-color: #e63946;
-    color: #e63946;
-    background: #fff5f5;
-}
-
+.quick-card:hover { border-color: #e63946; color: #e63946; background: #fff5f5; }
 .quick-icon { font-size: 1.2rem; }
 </style>
