@@ -299,6 +299,74 @@ class SettingTest extends TestCase
         $this->assertTrue($service->isOpen());
     }
 
+    public function test_admin_can_save_contact_info(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->post('/admin/settings/contact', [
+            'phone'   => '+36 1 234 5678',
+            'email'   => 'info@csepelpizza.hu',
+            'address' => '1211 Budapest, Csepel utca 1.',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertEquals('+36 1 234 5678',           Setting::get('contact_phone'));
+        $this->assertEquals('info@csepelpizza.hu',      Setting::get('contact_email'));
+        $this->assertEquals('1211 Budapest, Csepel utca 1.', Setting::get('contact_address'));
+    }
+
+    public function test_contact_info_requires_all_fields(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->post('/admin/settings/contact', []);
+
+        $response->assertSessionHasErrors(['phone', 'email', 'address']);
+    }
+
+    public function test_contact_email_must_be_valid(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->post('/admin/settings/contact', [
+            'phone'   => '+36 1 234 5678',
+            'email'   => 'not-an-email',
+            'address' => '1211 Budapest',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+    }
+
+    public function test_non_admin_cannot_save_contact_info(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/admin/settings/contact', [
+            'phone'   => '+36 1 234 5678',
+            'email'   => 'info@csepelpizza.hu',
+            'address' => '1211 Budapest',
+        ]);
+
+        $response->assertForbidden();
+    }
+
+    public function test_order_uses_sale_price_when_product_has_sale_price(): void
+    {
+        $user    = User::factory()->create();
+        $product = Product::factory()->create(['price' => 3000, 'sale_price' => 2000]);
+
+        $this->actingAs($user)->post('/orders', [
+            'payment_method' => 'cash',
+            'zip'            => '1000',
+            'city'           => 'Budapest',
+            'street'         => 'Fő utca 1.',
+            'items'          => [['id' => $product->id, 'quantity' => 1]],
+        ]);
+
+        $order = \App\Models\Order::first();
+        $this->assertEquals(2000, $order->subtotal);
+    }
+
     private function defaultHoursPayload(): array
     {
         $hours = [];
