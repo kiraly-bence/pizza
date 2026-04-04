@@ -11,12 +11,11 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             ['name' => 'Pizzák (32cm)', 'sort_order' => 1],
-            ['name' => 'Pizzák (45cm)', 'sort_order' => 2],
-            ['name' => 'Hamburgerek',   'sort_order' => 3],
-            ['name' => 'Köretek',       'sort_order' => 4],
-            ['name' => 'Szószok',       'sort_order' => 5],
-            ['name' => 'Saláták',       'sort_order' => 6],
-            ['name' => 'Italok',        'sort_order' => 7],
+            ['name' => 'Hamburgerek',   'sort_order' => 2],
+            ['name' => 'Köretek',       'sort_order' => 3],
+            ['name' => 'Szószok',       'sort_order' => 4],
+            ['name' => 'Saláták',       'sort_order' => 5],
+            ['name' => 'Italok',        'sort_order' => 6],
         ];
 
         foreach ($categories as $category) {

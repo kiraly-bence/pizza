@@ -92,22 +92,6 @@ class ProductSeeder extends Seeder
             }
         }
 
-        // ── Pizzák (45cm) — same pizzas, +1 000 Ft ──────────────────────────
-        foreach ($pizza32 as $data) {
-            $product = Product::create([
-                'category_id' => $cat('Pizzák (45cm)')->id,
-                'name' => $data['name'],
-                'description' => $data['description'],
-                'image' => $data['image'],
-                'price' => $data['price'] + 1000,
-                'sort_order' => $data['sort_order'],
-            ]);
-            $product->ingredients()->attach(array_map($ing, $data['ingredients']));
-            if ($data['labels']) {
-                $product->labels()->attach(array_map($label, $data['labels']));
-            }
-        }
-
         // ── Hamburgerek ──────────────────────────────────────────────────────
         $burgers = [
             [
