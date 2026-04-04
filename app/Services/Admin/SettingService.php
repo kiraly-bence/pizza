@@ -11,14 +11,14 @@ class SettingService
     {
         return [
             'delivery_fee' => (int) Setting::get('delivery_fee', OrderService::DELIVERY_FEE),
-            'service_fee'  => (int) Setting::get('service_fee',  OrderService::SERVICE_FEE),
+            'service_fee' => (int) Setting::get('service_fee', OrderService::SERVICE_FEE),
         ];
     }
 
     public function updateFees(int $deliveryFee, int $serviceFee): void
     {
         Setting::set('delivery_fee', $deliveryFee);
-        Setting::set('service_fee',  $serviceFee);
+        Setting::set('service_fee', $serviceFee);
     }
 
     public function openingHours(): array
@@ -44,29 +44,37 @@ class SettingService
     public function contactInfo(): array
     {
         return [
-            'phone'   => Setting::get('contact_phone',   ''),
-            'email'   => Setting::get('contact_email',   ''),
+            'phone' => Setting::get('contact_phone', ''),
+            'email' => Setting::get('contact_email', ''),
             'address' => Setting::get('contact_address', ''),
         ];
     }
 
     public function updateContactInfo(string $phone, string $email, string $address): void
     {
-        Setting::set('contact_phone',   $phone);
-        Setting::set('contact_email',   $email);
+        Setting::set('contact_phone', $phone);
+        Setting::set('contact_email', $email);
         Setting::set('contact_address', $address);
     }
 
     public function isOpen(): bool
     {
-        if ($this->isPaused()) return false;
+        if ($this->isPaused()) {
+            return false;
+        }
 
         $hours = $this->openingHours();
-        if (empty($hours)) return true; // no hours configured → always open
-        $day      = ((int) now()->format('w') + 6) % 7; // convert: Mon=0 … Sun=6
+
+        if (empty($hours)) {
+            return true; // no hours configured → always open
+        }
+
+        $day = ((int) now()->format('w') + 6) % 7; // convert: Mon=0 … Sun=6
         $dayHours = $hours[$day] ?? null;
 
-        if (!$dayHours || ($dayHours['closed'] ?? false)) return false;
+        if (! $dayHours || ($dayHours['closed'] ?? false)) {
+            return false;
+        }
 
         $now = now()->format('H:i');
 
