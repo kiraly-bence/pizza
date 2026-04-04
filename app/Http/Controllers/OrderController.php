@@ -41,6 +41,12 @@ class OrderController extends Controller
 
     public function store(PlaceOrderRequest $request, SettingService $settingService)
     {
+        if (!auth()->user()->hasVerifiedEmail()) {
+            throw ValidationException::withMessages([
+                'store' => 'A rendelés leadásához előbb erősítsd meg az e-mail címedet.',
+            ]);
+        }
+
         if (!$settingService->isOpen()) {
             throw ValidationException::withMessages([
                 'store' => 'Az étterem jelenleg nem fogad rendeléseket.',

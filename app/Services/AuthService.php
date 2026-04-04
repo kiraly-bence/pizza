@@ -20,6 +20,8 @@ class AuthService
 
         Auth::login($user);
 
+        $user->sendEmailVerificationNotification();
+
         return $user;
     }
 

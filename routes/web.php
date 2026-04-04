@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordResetController;
@@ -29,6 +30,16 @@ Route::post('/logout',   [AuthController::class, 'logout'])->name('logout')->mid
 Route::post('/forgot-password', [PasswordResetController::class, 'sendLink'])->name('password.email');
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
+
+// Email verification
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+        ->middleware('signed')
+        ->name('verification.verify');
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+});
 
 // Coupon validation (auth required)
 Route::middleware('auth')->post('/coupon/validate', [CouponController::class, 'validate'])->name('coupon.validate');

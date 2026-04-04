@@ -199,7 +199,7 @@
 
                             <button
                                 class="btn w-100 order-btn mt-4"
-                                :disabled="form.processing || !isOpen"
+                                :disabled="form.processing || !isOpen || !isVerified"
                                 @click="submit"
                             >
                                 {{ form.processing ? 'Feldolgozás...' : '🛒 Megrendelés leadása' }}
@@ -234,6 +234,7 @@ const props = defineProps({
 
 const page       = usePage()
 const isOpen     = computed(() => page.props.restaurant?.is_open ?? true)
+const isVerified = computed(() => !!props.auth?.user?.email_verified_at)
 
 const { items: cartItems, cartTotal, clearCart } = useCart()
 

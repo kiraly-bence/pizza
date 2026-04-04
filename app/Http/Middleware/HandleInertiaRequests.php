@@ -20,10 +20,12 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'flash' => [
-                'forgot_status'  => $request->session()->get('forgot_status'),
-                'reset_success'  => $request->session()->get('reset_success'),
-                'order_success'  => $request->session()->get('order_success'),
-                'address_saved'  => $request->session()->get('address_saved'),
+                'forgot_status'       => $request->session()->get('forgot_status'),
+                'reset_success'       => $request->session()->get('reset_success'),
+                'order_success'       => $request->session()->get('order_success'),
+                'address_saved'       => $request->session()->get('address_saved'),
+                'verified'            => $request->session()->get('verified'),
+                'verification_sent'   => $request->session()->get('verification_sent'),
             ],
             'restaurant' => fn () => [
                 'is_open'   => app(SettingService::class)->isOpen(),

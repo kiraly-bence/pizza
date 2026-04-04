@@ -55,6 +55,15 @@
             </div>
         </div>
 
+        <div v-if="showVerifyBanner" class="verify-banner">
+            <div class="container d-flex align-items-center justify-content-center gap-3 flex-wrap">
+                <span>Az e-mail címed még nincs megerősítve. Ellenőrizd a postaládádat!</span>
+                <button class="verify-resend-btn" :disabled="resending" @click="resendVerification">
+                    {{ resendDone ? 'Elküldve!' : (resending ? '...' : 'Újraküldés') }}
+                </button>
+            </div>
+        </div>
+
         <main>
             <slot />
         </main>
@@ -327,6 +336,21 @@ const props = defineProps({
 
 const page       = usePage()
 const restaurant = computed(() => page.props.restaurant)
+
+const showVerifyBanner = computed(() =>
+    props.auth?.user && !props.auth.user.email_verified_at
+)
+const resending  = ref(false)
+const resendDone = ref(false)
+
+const resendVerification = () => {
+    resending.value = true
+    router.post('/email/verification-notification', {}, {
+        preserveScroll: true,
+        onFinish: () => { resending.value = false; resendDone.value = true },
+    })
+}
+
 const authTab    = ref('login')
 const forgotSent = ref(page.props.flash?.forgot_status === 'sent')
 
@@ -832,4 +856,27 @@ const logout = () => {
     font-weight: 600;
     padding: 0.65rem 0;
 }
+
+.verify-banner {
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #fde68a;
+}
+
+.verify-resend-btn {
+    background: #92400e;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.3rem 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.verify-resend-btn:disabled { opacity: 0.6; cursor: default; }
 </style>
