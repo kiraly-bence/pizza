@@ -2,6 +2,9 @@
 .DS_Store
 .claude
 .env
+.mcp.json
+CLAUDE.md
+boost.json
 .env.backup
 .env.production
 .phpactor.json
