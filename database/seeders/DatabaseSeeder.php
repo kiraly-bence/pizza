@@ -33,11 +33,14 @@ class DatabaseSeeder extends Seeder
 
         // --- Categories & Products ---
 
-        // PIZZÁK
-        $pizzak = Category::create(['name' => 'Pizzák', 'sort_order' => 1]);
+        // PIZZÁK (32cm)
+        $pizzak32 = Category::create(['name' => 'Pizzák (32cm)', 'sort_order' => 1]);
+
+        // PIZZÁK (45cm)
+        $pizzak45 = Category::create(['name' => 'Pizzák (45cm)', 'sort_order' => 2]);
 
         $margherita = Product::create([
-            'category_id' => $pizzak->id,
+            'category_id' => $pizzak32->id,
             'name'        => 'Margherita',
             'description' => 'Klasszikus olasz pizza paradicsomszósszal, friss mozzarellával és bazsalikommal.',
             'image'       => 'products/margherita.jpg',
@@ -52,7 +55,7 @@ class DatabaseSeeder extends Seeder
         $margherita->labels()->attach([$labelVege->id]);
 
         $diavola = Product::create([
-            'category_id' => $pizzak->id,
+            'category_id' => $pizzak32->id,
             'name'        => 'Diavola',
             'description' => 'Csípős szalámi, jalapeño paprika és füstölt mozzarella az igazi pikáns élményért.',
             'image'       => 'products/diavola.jpg',
@@ -68,7 +71,7 @@ class DatabaseSeeder extends Seeder
         $diavola->labels()->attach([$labelBest->id, $labelSpicy->id]);
 
         $quattro = Product::create([
-            'category_id' => $pizzak->id,
+            'category_id' => $pizzak32->id,
             'name'        => 'Quattro Formaggi',
             'description' => 'Négy sajt harmonikus keveréke: mozzarella, gorgonzola, parmezán és pecorino.',
             'image'       => 'products/quattro-formaggi.jpg',
@@ -85,7 +88,7 @@ class DatabaseSeeder extends Seeder
         $quattro->labels()->attach([$labelVege->id]);
 
         $prosciutto = Product::create([
-            'category_id' => $pizzak->id,
+            'category_id' => $pizzak32->id,
             'name'        => 'Prosciutto e Funghi',
             'description' => 'Pármai sonka és friss erdei gombák, tejszínes alapon tálalva.',
             'image'       => 'products/prosciutto-e-funghi.jpg',
@@ -100,7 +103,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $bbqCsirke = Product::create([
-            'category_id' => $pizzak->id,
+            'category_id' => $pizzak32->id,
             'name'        => 'BBQ Csirke',
             'description' => 'Grillezett csirkemell, füstölt BBQ szósz, lilahagyma és mozzarella.',
             'image'       => 'products/bbq-csirke.jpg',
@@ -116,7 +119,7 @@ class DatabaseSeeder extends Seeder
         $bbqCsirke->labels()->attach([$labelNew->id]);
 
         $tonno = Product::create([
-            'category_id' => $pizzak->id,
+            'category_id' => $pizzak32->id,
             'name'        => 'Tonno e Cipolla',
             'description' => 'Tonhal, vöröshagyma, kapribogyó és olívaolaj — a mediterrán ízek kedvelőinek.',
             'image'       => 'products/tonno-e-cipolla.jpg',
@@ -131,8 +134,29 @@ class DatabaseSeeder extends Seeder
             $ingredients['kapribogyó']->id,
         ]);
 
+        // PIZZÁK (45cm) — same as 32cm
+        foreach ([
+            [$margherita, [$ingredients['paradicsom alap']->id, $ingredients['mozzarella']->id, $ingredients['bazsalikom']->id], [$labelVege->id]],
+            [$diavola,    [$ingredients['paradicsom alap']->id, $ingredients['mozzarella']->id, $ingredients['szalámi']->id, $ingredients['jalapeño']->id], [$labelBest->id, $labelSpicy->id]],
+            [$quattro,    [$ingredients['paradicsom alap']->id, $ingredients['mozzarella']->id, $ingredients['gorgonzola']->id, $ingredients['parmezán']->id, $ingredients['pecorino']->id], [$labelVege->id]],
+            [$prosciutto, [$ingredients['tejszínes alap']->id, $ingredients['mozzarella']->id, $ingredients['sonka']->id, $ingredients['gomba']->id], []],
+            [$bbqCsirke,  [$ingredients['BBQ alap']->id, $ingredients['mozzarella']->id, $ingredients['csirkemell']->id, $ingredients['lilahagyma']->id], [$labelNew->id]],
+            [$tonno,      [$ingredients['paradicsom alap']->id, $ingredients['mozzarella']->id, $ingredients['tonhal']->id, $ingredients['vöröshagyma']->id, $ingredients['kapribogyó']->id], []],
+        ] as [$source, $ingIds, $labelIds]) {
+            $copy = Product::create([
+                'category_id' => $pizzak45->id,
+                'name'        => $source->name,
+                'description' => $source->description,
+                'image'       => $source->image,
+                'price'       => $source->price + 1000,
+                'sort_order'  => $source->sort_order,
+            ]);
+            $copy->ingredients()->attach($ingIds);
+            if ($labelIds) $copy->labels()->attach($labelIds);
+        }
+
         // HAMBURGEREK
-        $hamburgerek = Category::create(['name' => 'Hamburgerek', 'sort_order' => 2]);
+        $hamburgerek = Category::create(['name' => 'Hamburgerek', 'sort_order' => 3]);
 
         $sajtburger = Product::create([
             'category_id' => $hamburgerek->id,
@@ -187,7 +211,7 @@ class DatabaseSeeder extends Seeder
         $csirkeburger->labels()->attach([$labelNew->id, $labelSpicy->id]);
 
         // KÖRETEK
-        $koretek = Category::create(['name' => 'Köretek', 'sort_order' => 3]);
+        $koretek = Category::create(['name' => 'Köretek', 'sort_order' => 4]);
 
         $sultKrumpli = Product::create([
             'category_id' => $koretek->id,
@@ -217,7 +241,7 @@ class DatabaseSeeder extends Seeder
         $fokhagymasSult->labels()->attach([$labelVege->id]);
 
         // SZÓSZOK
-        $szoszok = Category::create(['name' => 'Szószok', 'sort_order' => 4]);
+        $szoszok = Category::create(['name' => 'Szószok', 'sort_order' => 5]);
 
         $tzatziki = Product::create([
             'category_id' => $szoszok->id,
@@ -245,7 +269,7 @@ class DatabaseSeeder extends Seeder
         $bbqSzosz->labels()->attach([$labelVege->id]);
 
         // SALÁTÁK
-        $salatak = Category::create(['name' => 'Saláták', 'sort_order' => 5]);
+        $salatak = Category::create(['name' => 'Saláták', 'sort_order' => 6]);
 
         $caesarSalata = Product::create([
             'category_id' => $salatak->id,
