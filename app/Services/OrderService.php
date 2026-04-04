@@ -32,7 +32,7 @@ class OrderService
         $itemsData = collect($data['items'])->map(fn($item) => [
             'product_id' => $item['id'],
             'name'       => $products[$item['id']]->name,
-            'price'      => $products[$item['id']]->price,
+            'price'      => $products[$item['id']]->sale_price ?? $products[$item['id']]->price,
             'quantity'   => $item['quantity'],
         ]);
 

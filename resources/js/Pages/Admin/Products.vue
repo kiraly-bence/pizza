@@ -102,13 +102,13 @@
                 <div class="row-two mb-3">
                     <div>
                         <label class="form-label">Ár (Ft) *</label>
-                        <input v-model.number="form.price" type="number" class="form-control" min="0" placeholder="2490">
+                        <input v-model.number="form.price" type="number" class="form-control" min="1" placeholder="2900">
                         <span class="error-text" v-if="errors.price">{{ errors.price }}</span>
                     </div>
                     <div>
-                        <label class="form-label">Eredeti ár (Ft) <span class="text-muted">(opcionális, áthúzva jelenik meg)</span></label>
-                        <input v-model.number="form.original_price" type="number" class="form-control" min="0" placeholder="2900">
-                        <span class="error-text" v-if="errors.original_price">{{ errors.original_price }}</span>
+                        <label class="form-label">Kedvezményes ár (Ft) <span class="text-muted">(opcionális)</span></label>
+                        <input v-model.number="form.sale_price" type="number" class="form-control" min="0" placeholder="2450">
+                        <span class="error-text" v-if="errors.sale_price">{{ errors.sale_price }}</span>
                     </div>
                 </div>
 
@@ -190,12 +190,12 @@ const imagePreview = ref(null)
 const fileInput    = ref(null)
 
 const emptyForm = () => ({
-    name:           '',
-    description:    '',
-    price:          0,
-    original_price: null,
-    sort_order:     0,
-    is_available:   true,
+    name:        '',
+    description: '',
+    price:       0,
+    sale_price:  null,
+    sort_order:  0,
+    is_available: true,
     category_id:  '',
     ingredients:  [],
     labels:       [],
@@ -228,12 +228,12 @@ const openCreate = () => {
 const openEdit = (p) => {
     editing.value      = p.id
     form.value         = {
-        name:           p.name,
-        description:    p.description ?? '',
-        price:          p.price,
-        original_price: p.original_price ?? null,
-        sort_order:     p.sort_order,
-        is_available:   p.is_available,
+        name:        p.name,
+        description: p.description ?? '',
+        price:       p.price,
+        sale_price:  p.sale_price ?? null,
+        sort_order:  p.sort_order,
+        is_available: p.is_available,
         category_id:  p.category_id,
         ingredients:  [...p.ingredients],
         labels:       [...p.labels],

@@ -41,8 +41,8 @@
                                     <div class="d-flex justify-content-between align-items-start mb-1">
                                         <h5 class="card-title pizza-name mb-0">{{ product.name }}</h5>
                                         <span class="pizza-price">
-                                            <span v-if="product.original_price" class="pizza-price-original">{{ formatPrice(product.original_price) }} Ft</span>
-                                            {{ formatPrice(product.price) }} Ft
+                                            <span v-if="product.sale_price" class="pizza-price-original">{{ formatPrice(product.price) }} Ft</span>
+                                            {{ formatPrice(product.sale_price ?? product.price) }} Ft
                                         </span>
                                     </div>
                                     <p class="card-text pizza-desc flex-grow-1">{{ product.description }}</p>

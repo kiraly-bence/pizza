@@ -141,60 +141,60 @@ class ProductTest extends TestCase
         Storage::disk('public')->assertMissing('products/old.jpg');
     }
 
-    public function test_admin_can_create_product_with_original_price(): void
+    public function test_admin_can_create_product_with_sale_price(): void
     {
         $admin    = User::factory()->admin()->create();
         $category = Category::factory()->create();
 
         $this->actingAs($admin)->post('/admin/products', $this->productPayload($category->id, [
-            'price'          => 2450,
-            'original_price' => 2900,
+            'price'      => 2900,
+            'sale_price' => 2450,
         ]));
 
         $this->assertDatabaseHas('products', [
-            'price'          => 2450,
-            'original_price' => 2900,
+            'price'      => 2900,
+            'sale_price' => 2450,
         ]);
     }
 
-    public function test_original_price_must_be_greater_than_price(): void
+    public function test_sale_price_must_be_less_than_price(): void
     {
         $admin    = User::factory()->admin()->create();
         $category = Category::factory()->create();
 
         $response = $this->actingAs($admin)->post('/admin/products', $this->productPayload($category->id, [
-            'price'          => 2900,
-            'original_price' => 2450,
+            'price'      => 2900,
+            'sale_price' => 2900,
         ]));
 
-        $response->assertSessionHasErrors('original_price');
+        $response->assertSessionHasErrors('sale_price');
     }
 
-    public function test_original_price_can_be_null(): void
+    public function test_sale_price_can_be_null(): void
     {
         $admin    = User::factory()->admin()->create();
         $category = Category::factory()->create();
 
         $this->actingAs($admin)->post('/admin/products', $this->productPayload($category->id, [
-            'price'          => 2450,
-            'original_price' => null,
+            'price'      => 2450,
+            'sale_price' => null,
         ]));
 
         $product = Product::first();
-        $this->assertNull($product->original_price);
+        $this->assertNull($product->sale_price);
     }
 
-    public function test_admin_can_remove_discount_by_setting_original_price_to_null(): void
+    public function test_admin_can_remove_discount_by_setting_sale_price_to_null(): void
     {
         $admin    = User::factory()->admin()->create();
-        $product  = Product::factory()->create(['price' => 2450, 'original_price' => 2900]);
+        $product  = Product::factory()->create(['price' => 2900, 'sale_price' => 2450]);
         $category = Category::factory()->create();
 
         $this->actingAs($admin)->patch("/admin/products/{$product->id}", $this->productPayload($category->id, [
-            'price'          => 2450,
-            'original_price' => null,
+            'price'      => 2900,
+            'sale_price' => null,
         ]));
 
-        $this->assertNull($product->fresh()->original_price);
+        $this->assertNull($product->fresh()->sale_price);
     }
 }
