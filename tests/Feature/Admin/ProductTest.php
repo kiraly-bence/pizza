@@ -65,7 +65,7 @@ class ProductTest extends TestCase
         ));
 
         $response->assertRedirect();
-        $product = Product::first();
+        $product = Product::where('name', 'Teszt Pizza')->first();
         $this->assertNotNull($product->image);
         Storage::disk('public')->assertExists($product->image);
     }
@@ -82,7 +82,7 @@ class ProductTest extends TestCase
             'labels'      => [$label->id],
         ]));
 
-        $product = Product::first();
+        $product = Product::where('name', 'Teszt Pizza')->first();
         $this->assertTrue($product->ingredients->contains($ingredient));
         $this->assertTrue($product->labels->contains($label));
     }

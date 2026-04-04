@@ -303,6 +303,26 @@ class DatabaseSeeder extends Seeder
         ]);
         $gorogSalata->labels()->attach([$labelVege->id, $labelGlutenFree->id]);
 
+        // ITALOK
+        $italok = Category::create(['name' => 'Italok', 'sort_order' => 7]);
+
+        foreach ([
+            ['Coca-Cola 0.5L',               'products/coca-cola.png',         590, 1],
+            ['Sprite 0.5L',                  'products/sprite.png',             590, 2],
+            ['Cappy 0.5L',                   'products/cappy.png',              590, 3],
+            ['Ice Tea 0.5L',                 'products/ice-tea.png',            590, 4],
+            ['NaturAqua Szénsavmentes 0.5L', 'products/naturaqua-still.png',    390, 5],
+            ['NaturAqua Szénsavas 0.5L',     'products/naturaqua-sparkling.png', 390, 6],
+        ] as [$name, $image, $price, $sort]) {
+            Product::create([
+                'category_id' => $italok->id,
+                'name'        => $name,
+                'image'       => $image,
+                'price'       => $price,
+                'sort_order'  => $sort,
+            ]);
+        }
+
         // --- Settings ---
         $this->call(SettingsSeeder::class);
     }
