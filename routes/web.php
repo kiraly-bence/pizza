@@ -91,6 +91,8 @@ Route::prefix('admin')
         Route::patch('/coupons/{coupon}/toggle', [AdminCouponController::class, 'toggle'])->name('coupons.toggle');
 
         // Settings
-        Route::get('/settings',  [AdminSettingController::class, 'index'])->name('settings.index');
-        Route::post('/settings', [AdminSettingController::class, 'update'])->name('settings.update');
+        Route::get('/settings',         [AdminSettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings',        [AdminSettingController::class, 'update'])->name('settings.update');
+        Route::post('/settings/hours',  [AdminSettingController::class, 'updateHours'])->name('settings.hours');
+        Route::post('/settings/pause',  [AdminSettingController::class, 'togglePause'])->name('settings.pause');
     });

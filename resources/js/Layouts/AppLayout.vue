@@ -44,6 +44,17 @@
             </div>
         </nav>
 
+        <div v-if="restaurant && !restaurant.is_open" class="closed-banner">
+            <div class="container text-center">
+                <span v-if="restaurant.is_paused">
+                    Az étterem jelenleg szünetelteti a rendelések fogadását.
+                </span>
+                <span v-else>
+                    Az étterem jelenleg zárva van, nem fogad rendeléseket.
+                </span>
+            </div>
+        </div>
+
         <main>
             <slot />
         </main>
@@ -314,8 +325,9 @@ const props = defineProps({
     }
 })
 
-const page = usePage()
-const authTab = ref('login')
+const page       = usePage()
+const restaurant = computed(() => page.props.restaurant)
+const authTab    = ref('login')
 const forgotSent = ref(page.props.flash?.forgot_status === 'sent')
 
 watch(() => page.props.flash?.forgot_status, (val) => {
@@ -811,5 +823,13 @@ const logout = () => {
 .overlay-fade-enter-from,
 .overlay-fade-leave-to {
     opacity: 0;
+}
+
+.closed-banner {
+    background: #e63946;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.65rem 0;
 }
 </style>

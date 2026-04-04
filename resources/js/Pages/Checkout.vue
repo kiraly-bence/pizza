@@ -199,7 +199,7 @@
 
                             <button
                                 class="btn w-100 order-btn mt-4"
-                                :disabled="form.processing"
+                                :disabled="form.processing || !isOpen"
                                 @click="submit"
                             >
                                 {{ form.processing ? 'Feldolgozás...' : '🛒 Megrendelés leadása' }}
@@ -218,7 +218,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useForm } from '@inertiajs/vue3'
+import { useForm, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { useCart } from '@/composables/useCart'
 import axios from 'axios'
@@ -231,6 +231,9 @@ const props = defineProps({
     deliveryFee:  { type: Number, default: 990 },
     serviceFee:   { type: Number, default: 199 },
 })
+
+const page       = usePage()
+const isOpen     = computed(() => page.props.restaurant?.is_open ?? true)
 
 const { items: cartItems, cartTotal, clearCart } = useCart()
 
@@ -465,7 +468,7 @@ const formatPrice = (price) => Number(price).toLocaleString('hu-HU')
 }
 
 .order-btn:hover:not(:disabled) { background: #c1121f; color: #fff; }
-.order-btn:disabled { opacity: 0.7; color: #fff; }
+.order-btn:disabled { opacity: 0.55; background: #e63946 !important; color: #fff !important; cursor: not-allowed; }
 
 .summary-note {
     font-size: 0.72rem;
