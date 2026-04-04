@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\OrderConfirmation;
 use App\Models\Coupon;
 use App\Models\CouponUsage;
 use App\Models\Order;
@@ -9,6 +10,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Services\OrderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class CheckoutTest extends TestCase
@@ -201,5 +203,34 @@ class CheckoutTest extends TestCase
 
         $order = Order::first();
         $this->assertEquals(0, $order->total);
+    }
+
+    public function test_confirmation_email_is_sent_after_order(): void
+    {
+        Mail::fake();
+
+        $user    = User::factory()->create();
+        $product = Product::factory()->create(['price' => 2000]);
+
+        $this->actingAs($user)->post('/orders', $this->orderPayload([$product]));
+
+        Mail::assertSent(OrderConfirmation::class, function ($mail) use ($user) {
+            return $mail->hasTo($user->email);
+        });
+    }
+
+    public function test_confirmation_email_contains_order_details(): void
+    {
+        Mail::fake();
+
+        $user    = User::factory()->create();
+        $product = Product::factory()->create(['price' => 2000, 'name' => 'Margherita']);
+
+        $this->actingAs($user)->post('/orders', $this->orderPayload([$product]));
+
+        Mail::assertSent(OrderConfirmation::class, function ($mail) {
+            return $mail->order->total > 0
+                && $mail->order->items->isNotEmpty();
+        });
     }
 }

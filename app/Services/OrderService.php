@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Mail\OrderConfirmation;
 use App\Models\Coupon;
 use App\Models\CouponUsage;
 use App\Models\Order;
@@ -9,6 +10,7 @@ use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class OrderService
 {
@@ -54,7 +56,7 @@ class OrderService
         $serviceFee  = $this->serviceFee();
         $total       = max(0, $subtotal + $deliveryFee + $serviceFee - $discountAmount);
 
-        return DB::transaction(function () use ($user, $data, $itemsData, $subtotal, $total, $coupon, $discountAmount, $deliveryFee, $serviceFee) {
+        $order = DB::transaction(function () use ($user, $data, $itemsData, $subtotal, $total, $coupon, $discountAmount, $deliveryFee, $serviceFee) {
             $order = Order::create([
                 'user_id'          => $user->id,
                 'coupon_id'        => $coupon?->id,
@@ -92,6 +94,10 @@ class OrderService
 
             return $order;
         });
+
+        Mail::to($user->email)->send(new OrderConfirmation($user, $order));
+
+        return $order;
     }
 
     public function forUser(User $user): \Illuminate\Support\Collection
