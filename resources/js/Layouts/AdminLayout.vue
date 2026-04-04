@@ -3,7 +3,7 @@
         <aside class="sidebar">
             <div class="sidebar-brand">
                 <span class="brand-icon">🍕</span>
-                <span class="brand-text">PizzaRex Admin</span>
+                <span class="brand-text">Csepel Pizza Admin</span>
             </div>
 
             <nav class="sidebar-nav">

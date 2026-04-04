@@ -3,7 +3,7 @@
         <div class="reset-card">
             <div class="text-center mb-4">
                 <div class="brand-icon">🍕</div>
-                <h1 class="brand-name">PizzaRex</h1>
+                <h1 class="brand-name">Csepel Pizza</h1>
                 <h2 class="reset-title">Új jelszó beállítása</h2>
             </div>
 

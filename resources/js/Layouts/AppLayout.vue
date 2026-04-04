@@ -4,7 +4,7 @@
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center gap-2" href="/">
                     <div class="logo-icon">🍕</div>
-                    <span class="brand-name">PizzaRex</span>
+                    <span class="brand-name">Csepel Pizza</span>
                 </a>
 
                 <div class="ms-auto d-flex align-items-center gap-3">
@@ -315,7 +315,7 @@
 
         <footer class="site-footer">
             <div class="container text-center">
-                <p class="mb-0">© 2026 PizzaRex — Minden jog fenntartva</p>
+                <p class="mb-0">© 2026 Csepel Pizza — Minden jog fenntartva</p>
             </div>
         </footer>
     </div>

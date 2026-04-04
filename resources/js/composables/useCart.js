@@ -1,6 +1,6 @@
 import { ref, computed, watch } from 'vue'
 
-const STORAGE_KEY = 'pizzarex_cart'
+const STORAGE_KEY = 'csepelpizza_cart'
 
 // Module-level singleton — shared across all component instances
 const items = ref(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]'))
