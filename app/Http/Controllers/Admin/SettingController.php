@@ -11,9 +11,9 @@ use Inertia\Inertia;
 
 class SettingController extends Controller
 {
-    public function __construct(private SettingService $settingService) {}
+    public function __construct(private readonly SettingService $settingService) {}
 
-    public function index()
+    public function index(): \Inertia\Response
     {
         return Inertia::render('Admin/Settings', [
             'auth'         => ['user' => auth()->user()],
@@ -24,7 +24,7 @@ class SettingController extends Controller
         ]);
     }
 
-    public function update(SaveSettingsRequest $request)
+    public function update(SaveSettingsRequest $request): \Illuminate\Http\RedirectResponse
     {
         $data = $request->validated();
         $this->settingService->updateFees($data['delivery_fee'], $data['service_fee']);
@@ -32,14 +32,14 @@ class SettingController extends Controller
         return back()->with('success', 'Beállítások mentve.');
     }
 
-    public function updateHours(SaveOpeningHoursRequest $request)
+    public function updateHours(SaveOpeningHoursRequest $request): \Illuminate\Http\RedirectResponse
     {
         $this->settingService->updateOpeningHours($request->validated()['hours']);
 
         return back()->with('success', 'Nyitvatartás mentve.');
     }
 
-    public function updateContact(SaveContactRequest $request)
+    public function updateContact(SaveContactRequest $request): \Illuminate\Http\RedirectResponse
     {
         $data = $request->validated();
         $this->settingService->updateContactInfo($data['phone'], $data['email'], $data['address']);
@@ -47,7 +47,7 @@ class SettingController extends Controller
         return back()->with('success', 'Kapcsolati adatok mentve.');
     }
 
-    public function togglePause()
+    public function togglePause(): \Illuminate\Http\RedirectResponse
     {
         $this->settingService->setPaused(!$this->settingService->isPaused());
 

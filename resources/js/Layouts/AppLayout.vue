@@ -361,6 +361,7 @@ import { ref, computed, watch } from 'vue'
 import { useForm, router, usePage } from '@inertiajs/vue3'
 import { Modal } from 'bootstrap'
 import { useCart } from '@/composables/useCart'
+import { useFormatting } from '@/composables/useFormatting'
 
 const props = defineProps({
     auth: {
@@ -456,7 +457,7 @@ const submitForgot = () => {
     forgotForm.post('/forgot-password')
 }
 
-const formatPrice = (price) => Number(price).toLocaleString('hu-HU')
+const { formatPrice } = useFormatting()
 
 // Logout
 const logout = () => {

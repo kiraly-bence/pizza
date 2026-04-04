@@ -10,9 +10,9 @@ use Inertia\Inertia;
 
 class IngredientController extends Controller
 {
-    public function __construct(private IngredientService $ingredientService) {}
+    public function __construct(private readonly IngredientService $ingredientService) {}
 
-    public function index()
+    public function index(): \Inertia\Response
     {
         return Inertia::render('Admin/Ingredients', [
             'auth'        => ['user' => auth()->user()],
@@ -20,21 +20,21 @@ class IngredientController extends Controller
         ]);
     }
 
-    public function store(SaveIngredientRequest $request)
+    public function store(SaveIngredientRequest $request): \Illuminate\Http\RedirectResponse
     {
         $this->ingredientService->create($request->validated());
 
         return back();
     }
 
-    public function update(SaveIngredientRequest $request, Ingredient $ingredient)
+    public function update(SaveIngredientRequest $request, Ingredient $ingredient): \Illuminate\Http\RedirectResponse
     {
         $this->ingredientService->update($ingredient, $request->validated());
 
         return back();
     }
 
-    public function destroy(Ingredient $ingredient)
+    public function destroy(Ingredient $ingredient): \Illuminate\Http\RedirectResponse
     {
         $this->ingredientService->delete($ingredient);
 

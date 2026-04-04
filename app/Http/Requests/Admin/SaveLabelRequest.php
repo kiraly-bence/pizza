@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\LabelType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class SaveLabelRequest extends FormRequest
 {
@@ -15,7 +17,7 @@ class SaveLabelRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:100'],
-            'type' => ['required', 'in:primary,secondary'],
+            'type' => ['required', Rule::in(LabelType::values())],
         ];
     }
 }

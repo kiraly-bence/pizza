@@ -221,6 +221,7 @@ import { ref, computed } from 'vue'
 import { useForm, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { useCart } from '@/composables/useCart'
+import { useFormatting } from '@/composables/useFormatting'
 import axios from 'axios'
 
 defineOptions({ layout: null })
@@ -306,7 +307,7 @@ const submit = () => {
     })
 }
 
-const formatPrice = (price) => Number(price).toLocaleString('hu-HU')
+const { formatPrice } = useFormatting()
 </script>
 
 <style scoped>

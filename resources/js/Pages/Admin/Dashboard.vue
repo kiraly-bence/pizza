@@ -82,13 +82,14 @@
 
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { useFormatting } from '@/composables/useFormatting'
 
 defineProps({
     auth:  { type: Object, required: true },
     stats: { type: Object, required: true },
 })
 
-const formatPrice = (v) => Number(v).toLocaleString('hu-HU')
+const { formatPrice } = useFormatting()
 </script>
 
 <style scoped>

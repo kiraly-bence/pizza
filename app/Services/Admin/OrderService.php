@@ -15,8 +15,8 @@ class OrderService
             ->map(fn($o) => [
                 'id'               => $o->id,
                 'user'             => ['name' => $o->user->name, 'email' => $o->user->email],
-                'status'           => $o->status,
-                'payment_method'   => $o->payment_method,
+                'status'           => $o->status->value,
+                'payment_method'   => $o->payment_method->value,
                 'address'          => trim("{$o->zip} {$o->city}, {$o->street}" . ($o->note ? ", {$o->note}" : '')),
                 'delivery_message' => $o->delivery_message,
                 'items_count'      => $o->items->sum('quantity'),

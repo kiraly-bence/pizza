@@ -10,9 +10,9 @@ use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
-    public function __construct(private CategoryService $categoryService) {}
+    public function __construct(private readonly CategoryService $categoryService) {}
 
-    public function index()
+    public function index(): \Inertia\Response
     {
         return Inertia::render('Admin/Categories', [
             'auth'       => ['user' => auth()->user()],
@@ -20,21 +20,21 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function store(SaveCategoryRequest $request)
+    public function store(SaveCategoryRequest $request): \Illuminate\Http\RedirectResponse
     {
         $this->categoryService->create($request->validated());
 
         return back();
     }
 
-    public function update(SaveCategoryRequest $request, Category $category)
+    public function update(SaveCategoryRequest $request, Category $category): \Illuminate\Http\RedirectResponse
     {
         $this->categoryService->update($category, $request->validated());
 
         return back();
     }
 
-    public function destroy(Category $category)
+    public function destroy(Category $category): \Illuminate\Http\RedirectResponse
     {
         $this->categoryService->delete($category);
 

@@ -22,6 +22,9 @@ class Product extends Model
     ];
 
     protected $casts = [
+        'price'        => 'integer',
+        'sale_price'   => 'integer',
+        'sort_order'   => 'integer',
         'is_available' => 'boolean',
     ];
 

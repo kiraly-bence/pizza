@@ -172,6 +172,7 @@
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { useFormatting } from '@/composables/useFormatting'
 
 const props = defineProps({
     auth:        { type: Object, required: true },
@@ -276,7 +277,7 @@ const destroy = (id) => {
     router.delete(`/admin/products/${id}`, { preserveScroll: true })
 }
 
-const formatPrice = (v) => Number(v).toLocaleString('hu-HU')
+const { formatPrice } = useFormatting()
 </script>
 
 <style scoped>

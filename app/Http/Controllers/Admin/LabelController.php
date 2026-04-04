@@ -10,9 +10,9 @@ use Inertia\Inertia;
 
 class LabelController extends Controller
 {
-    public function __construct(private LabelService $labelService) {}
+    public function __construct(private readonly LabelService $labelService) {}
 
-    public function index()
+    public function index(): \Inertia\Response
     {
         return Inertia::render('Admin/Labels', [
             'auth'   => ['user' => auth()->user()],
@@ -20,21 +20,21 @@ class LabelController extends Controller
         ]);
     }
 
-    public function store(SaveLabelRequest $request)
+    public function store(SaveLabelRequest $request): \Illuminate\Http\RedirectResponse
     {
         $this->labelService->create($request->validated());
 
         return back();
     }
 
-    public function update(SaveLabelRequest $request, Label $label)
+    public function update(SaveLabelRequest $request, Label $label): \Illuminate\Http\RedirectResponse
     {
         $this->labelService->update($label, $request->validated());
 
         return back();
     }
 
-    public function destroy(Label $label)
+    public function destroy(Label $label): \Illuminate\Http\RedirectResponse
     {
         $this->labelService->delete($label);
 

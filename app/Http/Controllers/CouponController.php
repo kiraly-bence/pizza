@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Coupon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CouponController extends Controller
 {
-    public function validate(Request $request)
+    public function validate(Request $request): JsonResponse
     {
         $request->validate(['code' => 'required|string']);
 
@@ -22,7 +23,7 @@ class CouponController extends Controller
 
         return response()->json([
             'valid'          => true,
-            'discount_type'  => $coupon->discount_type,
+            'discount_type'  => $coupon->discount_type->value,
             'discount_value' => $coupon->discount_value,
         ]);
     }

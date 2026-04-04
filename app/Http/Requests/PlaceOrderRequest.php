@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\PaymentMethod;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PlaceOrderRequest extends FormRequest
 {
@@ -17,7 +19,7 @@ class PlaceOrderRequest extends FormRequest
             'items'            => ['required', 'array', 'min:1'],
             'items.*.id'       => ['required', 'integer', 'exists:products,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
-            'payment_method'   => ['required', 'in:card,cash'],
+            'payment_method'   => ['required', Rule::in(PaymentMethod::values())],
             'zip'              => ['required', 'string', 'max:10'],
             'city'             => ['required', 'string', 'max:100'],
             'street'           => ['required', 'string', 'max:255'],

@@ -10,9 +10,9 @@ use Inertia\Inertia;
 
 class OrderController extends Controller
 {
-    public function __construct(private OrderService $orderService) {}
+    public function __construct(private readonly OrderService $orderService) {}
 
-    public function index()
+    public function index(): \Inertia\Response
     {
         return Inertia::render('Admin/Orders', [
             'auth'   => ['user' => auth()->user()],
@@ -20,7 +20,7 @@ class OrderController extends Controller
         ]);
     }
 
-    public function updateStatus(UpdateOrderStatusRequest $request, Order $order)
+    public function updateStatus(UpdateOrderStatusRequest $request, Order $order): \Illuminate\Http\RedirectResponse
     {
         $this->orderService->updateStatus($order, $request->validated('status'));
 

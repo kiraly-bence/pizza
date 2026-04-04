@@ -108,8 +108,8 @@ class OrderService
             ->get()
             ->map(fn($order) => [
                 'id'             => $order->id,
-                'status'         => $order->status,
-                'payment_method' => $order->payment_method,
+                'status'         => $order->status->value,
+                'payment_method' => $order->payment_method->value,
                 'address'        => trim("{$order->zip} {$order->city}, {$order->street}" . ($order->note ? ", {$order->note}" : '')),
                 'subtotal'        => $order->subtotal,
                 'delivery_fee'    => $order->delivery_fee,

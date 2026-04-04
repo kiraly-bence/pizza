@@ -10,9 +10,9 @@ use Inertia\Inertia;
 
 class UserController extends Controller
 {
-    public function __construct(private UserService $userService) {}
+    public function __construct(private readonly UserService $userService) {}
 
-    public function index()
+    public function index(): \Inertia\Response
     {
         return Inertia::render('Admin/Users', [
             'auth'  => ['user' => auth()->user()],
@@ -20,7 +20,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function updateRole(UpdateUserRoleRequest $request, User $user)
+    public function updateRole(UpdateUserRoleRequest $request, User $user): \Illuminate\Http\RedirectResponse
     {
         try {
             $this->userService->updateRole($user, $request->validated('role'), auth()->id());
@@ -31,7 +31,7 @@ class UserController extends Controller
         return back();
     }
 
-    public function ban(User $user)
+    public function ban(User $user): \Illuminate\Http\RedirectResponse
     {
         try {
             $this->userService->ban($user, auth()->id());
@@ -42,7 +42,7 @@ class UserController extends Controller
         return back();
     }
 
-    public function unban(User $user)
+    public function unban(User $user): \Illuminate\Http\RedirectResponse
     {
         $this->userService->unban($user);
 

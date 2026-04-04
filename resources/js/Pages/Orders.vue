@@ -91,6 +91,7 @@
 <script setup>
 import { ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { useFormatting } from '@/composables/useFormatting'
 
 defineOptions({ layout: null })
 
@@ -107,7 +108,7 @@ const toggle = (id) => {
     else expanded.value.splice(idx, 1)
 }
 
-const formatPrice = (price) => Number(price).toLocaleString('hu-HU')
+const { formatPrice } = useFormatting()
 
 const statusLabel = (status) => ({
     pending:    'Függőben',

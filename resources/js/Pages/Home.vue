@@ -120,6 +120,7 @@ import { ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Modal } from 'bootstrap'
 import { useCart } from '@/composables/useCart'
+import { useFormatting } from '@/composables/useFormatting'
 
 defineProps({
     auth: {
@@ -154,8 +155,7 @@ const primaryLabels = (product) =>
 const secondaryLabels = (product) =>
     product.labels.filter(l => l.type === 'secondary')
 
-const formatPrice = (price) =>
-    Number(price).toLocaleString('hu-HU')
+const { formatPrice } = useFormatting()
 </script>
 
 <style scoped>

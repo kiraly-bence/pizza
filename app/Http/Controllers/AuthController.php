@@ -5,20 +5,21 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Services\AuthService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function __construct(private AuthService $authService) {}
+    public function __construct(private readonly AuthService $authService) {}
 
-    public function register(RegisterRequest $request)
+    public function register(RegisterRequest $request): RedirectResponse
     {
         $this->authService->register($request->validated());
 
         return redirect()->route('home');
     }
 
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request): RedirectResponse
     {
         $result = $this->authService->attempt($request->only('email', 'password'), $request);
 
@@ -35,7 +36,7 @@ class AuthController extends Controller
         return redirect()->route('home');
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): RedirectResponse
     {
         $this->authService->logout($request);
 

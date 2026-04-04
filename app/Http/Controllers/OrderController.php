@@ -5,14 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PlaceOrderRequest;
 use App\Services\Admin\SettingService;
 use App\Services\OrderService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class OrderController extends Controller
 {
-    public function __construct(private OrderService $orderService) {}
+    public function __construct(private readonly OrderService $orderService) {}
 
-    public function checkout()
+    public function checkout(): Response
     {
         $user = auth()->user();
 
@@ -29,7 +31,7 @@ class OrderController extends Controller
         ]);
     }
 
-    public function myOrders()
+    public function myOrders(): Response
     {
         $user = auth()->user();
 
@@ -39,7 +41,7 @@ class OrderController extends Controller
         ]);
     }
 
-    public function store(PlaceOrderRequest $request, SettingService $settingService)
+    public function store(PlaceOrderRequest $request, SettingService $settingService): RedirectResponse
     {
         if (!auth()->user()->hasVerifiedEmail()) {
             throw ValidationException::withMessages([

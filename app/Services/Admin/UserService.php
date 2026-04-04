@@ -2,8 +2,10 @@
 
 namespace App\Services\Admin;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use RuntimeException;
 
 class UserService
 {
@@ -13,7 +15,7 @@ class UserService
             'id'           => $u->id,
             'name'         => $u->name,
             'email'        => $u->email,
-            'role'         => $u->role,
+            'role'         => $u->role->value,
             'banned_at'    => $u->banned_at?->format('Y. m. d. H:i'),
             'orders_count' => $u->orders_count,
             'created_at'   => $u->created_at->format('Y. m. d.'),
@@ -22,8 +24,8 @@ class UserService
 
     public function updateRole(User $user, string $role, int $currentUserId): void
     {
-        if ($user->id === $currentUserId && $role !== 'admin') {
-            throw new \RuntimeException('Saját admin jogosultságodat nem vonhatod meg.');
+        if ($user->id === $currentUserId && $role !== UserRole::Admin->value) {
+            throw new RuntimeException('Saját admin jogosultságodat nem vonhatod meg.');
         }
 
         $user->update(['role' => $role]);
@@ -32,11 +34,11 @@ class UserService
     public function ban(User $user, int $currentUserId): void
     {
         if ($user->id === $currentUserId) {
-            throw new \RuntimeException('Saját magadat nem tilthatod le.');
+            throw new RuntimeException('Saját magadat nem tilthatod le.');
         }
 
         if ($user->isAdmin()) {
-            throw new \RuntimeException('Admin felhasználót nem lehet letiltani.');
+            throw new RuntimeException('Admin felhasználót nem lehet letiltani.');
         }
 
         $user->update(['banned_at' => now()]);

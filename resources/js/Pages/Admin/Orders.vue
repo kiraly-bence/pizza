@@ -90,6 +90,7 @@
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { useFormatting } from '@/composables/useFormatting'
 
 defineProps({
     auth:   { type: Object, required: true },
@@ -98,7 +99,7 @@ defineProps({
 
 const expanded = ref(null)
 
-const formatPrice = (v) => Number(v).toLocaleString('hu-HU')
+const { formatPrice } = useFormatting()
 
 const updateStatus = (id, status) => {
     router.patch(`/admin/orders/${id}/status`, { status }, { preserveScroll: true })
