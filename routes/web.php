@@ -104,6 +104,7 @@ Route::prefix('admin')
         // Settings
         Route::get('/settings',         [AdminSettingController::class, 'index'])->name('settings.index');
         Route::post('/settings',        [AdminSettingController::class, 'update'])->name('settings.update');
-        Route::post('/settings/hours',  [AdminSettingController::class, 'updateHours'])->name('settings.hours');
-        Route::post('/settings/pause',  [AdminSettingController::class, 'togglePause'])->name('settings.pause');
+        Route::post('/settings/hours',   [AdminSettingController::class, 'updateHours'])->name('settings.hours');
+        Route::post('/settings/pause',   [AdminSettingController::class, 'togglePause'])->name('settings.pause');
+        Route::post('/settings/contact', [AdminSettingController::class, 'updateContact'])->name('settings.contact');
     });

@@ -7,16 +7,6 @@ use App\Services\OrderService;
 
 class SettingService
 {
-    const DEFAULT_HOURS = [
-        0 => ['open' => '11:00', 'close' => '22:00', 'closed' => false],
-        1 => ['open' => '11:00', 'close' => '22:00', 'closed' => false],
-        2 => ['open' => '11:00', 'close' => '22:00', 'closed' => false],
-        3 => ['open' => '11:00', 'close' => '22:00', 'closed' => false],
-        4 => ['open' => '11:00', 'close' => '22:00', 'closed' => false],
-        5 => ['open' => '11:00', 'close' => '23:00', 'closed' => false],
-        6 => ['open' => '11:00', 'close' => '23:00', 'closed' => false],
-    ];
-
     public function fees(): array
     {
         return [
@@ -33,9 +23,7 @@ class SettingService
 
     public function openingHours(): array
     {
-        $stored = Setting::get('opening_hours');
-
-        return $stored ? json_decode($stored, true) : self::DEFAULT_HOURS;
+        return json_decode(Setting::get('opening_hours', '[]'), true);
     }
 
     public function updateOpeningHours(array $hours): void
@@ -53,16 +41,30 @@ class SettingService
         Setting::set('orders_paused', $paused ? '1' : '0');
     }
 
+    public function contactInfo(): array
+    {
+        return [
+            'phone'   => Setting::get('contact_phone',   ''),
+            'email'   => Setting::get('contact_email',   ''),
+            'address' => Setting::get('contact_address', ''),
+        ];
+    }
+
+    public function updateContactInfo(string $phone, string $email, string $address): void
+    {
+        Setting::set('contact_phone',   $phone);
+        Setting::set('contact_email',   $email);
+        Setting::set('contact_address', $address);
+    }
+
     public function isOpen(): bool
     {
         if ($this->isPaused()) return false;
 
-        $stored = Setting::get('opening_hours');
-        if (!$stored) return true; // no hours configured → always open
-
-        $hours     = json_decode($stored, true);
-        $day       = (int) now()->format('w'); // 0 = Sunday
-        $dayHours  = $hours[$day] ?? null;
+        $hours = $this->openingHours();
+        if (empty($hours)) return true; // no hours configured → always open
+        $day      = ((int) now()->format('w') + 6) % 7; // convert: Mon=0 … Sun=6
+        $dayHours = $hours[$day] ?? null;
 
         if (!$dayHours || ($dayHours['closed'] ?? false)) return false;
 

@@ -28,8 +28,10 @@ class HandleInertiaRequests extends Middleware
                 'verification_sent'   => $request->session()->get('verification_sent'),
             ],
             'restaurant' => fn () => [
-                'is_open'   => app(SettingService::class)->isOpen(),
-                'is_paused' => app(SettingService::class)->isPaused(),
+                'is_open'      => app(SettingService::class)->isOpen(),
+                'is_paused'    => app(SettingService::class)->isPaused(),
+                'opening_hours' => app(SettingService::class)->openingHours(),
+                'contact'      => app(SettingService::class)->contactInfo(),
             ],
         ];
     }

@@ -67,6 +67,53 @@
             </button>
         </div>
 
+        <!-- Kapcsolati adatok -->
+        <div class="admin-card settings-card mb-4" style="max-width: 480px;">
+            <p class="section-title">Kapcsolati adatok</p>
+
+            <div v-if="contactSaved" class="alert-success mb-4">Kapcsolati adatok sikeresen mentve.</div>
+
+            <div class="mb-3">
+                <label class="form-label">Telefonszám</label>
+                <input
+                    v-model="contactForm.phone"
+                    type="text"
+                    class="form-control"
+                    :class="{ 'is-invalid': contactErrors.phone }"
+                    placeholder="+36 1 234 5678"
+                >
+                <div class="invalid-feedback">{{ contactErrors.phone }}</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">E-mail cím</label>
+                <input
+                    v-model="contactForm.email"
+                    type="email"
+                    class="form-control"
+                    :class="{ 'is-invalid': contactErrors.email }"
+                    placeholder="info@csepelpizza.hu"
+                >
+                <div class="invalid-feedback">{{ contactErrors.email }}</div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Cím</label>
+                <input
+                    v-model="contactForm.address"
+                    type="text"
+                    class="form-control"
+                    :class="{ 'is-invalid': contactErrors.address }"
+                    placeholder="1211 Budapest, Csepel utca 1."
+                >
+                <div class="invalid-feedback">{{ contactErrors.address }}</div>
+            </div>
+
+            <button class="btn-primary" :disabled="savingContact" @click="saveContact">
+                {{ savingContact ? 'Mentés...' : 'Mentés' }}
+            </button>
+        </div>
+
         <!-- Díjak -->
         <div class="admin-card settings-card" style="max-width: 480px;">
             <p class="section-title">Díjak</p>
@@ -114,11 +161,12 @@ const props = defineProps({
     fees:         { type: Object, required: true },
     openingHours: { type: Object, required: true },
     paused:       { type: Boolean, default: false },
+    contact:      { type: Object, required: true },
 })
 
-// Display order: Mon(1) … Sat(6) Sun(0)
-const dayOrder = [1, 2, 3, 4, 5, 6, 0]
-const dayNames = { 0: 'Vasárnap', 1: 'Hétfő', 2: 'Kedd', 3: 'Szerda', 4: 'Csütörtök', 5: 'Péntek', 6: 'Szombat' }
+// 0 = Hétfő … 6 = Vasárnap
+const dayOrder = [0, 1, 2, 3, 4, 5, 6]
+const dayNames = { 0: 'Hétfő', 1: 'Kedd', 2: 'Szerda', 3: 'Csütörtök', 4: 'Péntek', 5: 'Szombat', 6: 'Vasárnap' }
 
 // --- Pause ---
 const toggling = ref(false)
@@ -145,6 +193,22 @@ const saveHours = () => {
         preserveScroll: true,
         onSuccess: () => { savingHours.value = false; hoursSaved.value = true },
         onError:   ()  => { savingHours.value = false },
+    })
+}
+
+// --- Contact ---
+const contactForm   = ref({ phone: props.contact.phone, email: props.contact.email, address: props.contact.address })
+const savingContact = ref(false)
+const contactErrors = ref({})
+const contactSaved  = ref(false)
+
+const saveContact = () => {
+    savingContact.value = true
+    contactSaved.value  = false
+    router.post('/admin/settings/contact', contactForm.value, {
+        preserveScroll: true,
+        onSuccess: () => { savingContact.value = false; contactSaved.value = true; contactErrors.value = {} },
+        onError:   (e) => { contactErrors.value = e; savingContact.value = false },
     })
 }
 

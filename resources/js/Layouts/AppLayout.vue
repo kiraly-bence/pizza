@@ -314,8 +314,43 @@
         </transition>
 
         <footer class="site-footer">
-            <div class="container text-center">
-                <p class="mb-0">© 2026 Csepel Pizza — Minden jog fenntartva</p>
+            <div class="container">
+                <div class="footer-grid">
+                    <!-- Contact -->
+                    <div class="footer-col">
+                        <div class="footer-brand">🍕 Csepel Pizza</div>
+                        <ul class="footer-list" v-if="restaurant?.contact">
+                            <li v-if="restaurant.contact.phone">
+                                <span class="footer-icon">📞</span>
+                                <a :href="'tel:' + restaurant.contact.phone">{{ restaurant.contact.phone }}</a>
+                            </li>
+                            <li v-if="restaurant.contact.email">
+                                <span class="footer-icon">✉️</span>
+                                <a :href="'mailto:' + restaurant.contact.email">{{ restaurant.contact.email }}</a>
+                            </li>
+                            <li v-if="restaurant.contact.address">
+                                <span class="footer-icon">📍</span>
+                                {{ restaurant.contact.address }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Opening hours -->
+                    <div class="footer-col" v-if="restaurant?.opening_hours">
+                        <div class="footer-section-title">Nyitvatartás</div>
+                        <ul class="footer-list">
+                            <li v-for="d in [0,1,2,3,4,5,6]" :key="d">
+                                <span class="footer-day">{{ {0:'Hétfő',1:'Kedd',2:'Szerda',3:'Csütörtök',4:'Péntek',5:'Szombat',6:'Vasárnap'}[d] }}</span>
+                                <span v-if="restaurant.opening_hours[d]?.closed" class="footer-closed">Zárva</span>
+                                <span v-else>{{ restaurant.opening_hours[d]?.open }} – {{ restaurant.opening_hours[d]?.close }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    © 2026 Csepel Pizza — Minden jog fenntartva
+                </div>
             </div>
         </footer>
     </div>
@@ -623,10 +658,74 @@ const logout = () => {
 
 .site-footer {
     background: #1a1a1a;
-    color: rgba(255,255,255,0.5);
+    color: rgba(255,255,255,0.55);
     font-size: 0.85rem;
-    padding: 1.5rem 0;
+    padding: 3rem 0 1.5rem;
     margin-top: 4rem;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-brand {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.footer-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 0.75rem;
+}
+
+.footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.footer-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+
+.footer-list a {
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+}
+
+.footer-list a:hover { color: #fff; }
+
+.footer-icon { font-size: 0.8rem; }
+
+.footer-day {
+    min-width: 85px;
+    display: inline-block;
+    color: rgba(255,255,255,0.35);
+    font-size: 0.8rem;
+}
+
+.footer-closed { color: #e63946; font-size: 0.8rem; }
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 1.25rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.3);
 }
 
 /* Cart sidebar */

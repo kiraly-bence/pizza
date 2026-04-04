@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SaveContactRequest;
 use App\Http\Requests\Admin\SaveOpeningHoursRequest;
 use App\Http\Requests\Admin\SaveSettingsRequest;
 use App\Services\Admin\SettingService;
@@ -19,6 +20,7 @@ class SettingController extends Controller
             'fees'         => $this->settingService->fees(),
             'openingHours' => $this->settingService->openingHours(),
             'paused'       => $this->settingService->isPaused(),
+            'contact'      => $this->settingService->contactInfo(),
         ]);
     }
 
@@ -35,6 +37,14 @@ class SettingController extends Controller
         $this->settingService->updateOpeningHours($request->validated()['hours']);
 
         return back()->with('success', 'Nyitvatartás mentve.');
+    }
+
+    public function updateContact(SaveContactRequest $request)
+    {
+        $data = $request->validated();
+        $this->settingService->updateContactInfo($data['phone'], $data['email'], $data['address']);
+
+        return back()->with('success', 'Kapcsolati adatok mentve.');
     }
 
     public function togglePause()
