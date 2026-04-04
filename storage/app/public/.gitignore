@@ -1,2 +1,8 @@
 *
 !.gitignore
+!products/
+products/*
+!products/*.jpg
+!products/*.jpeg
+!products/*.png
+!products/*.webp
