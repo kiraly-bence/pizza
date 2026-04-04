@@ -135,7 +135,7 @@
 
                     <!-- Right column: summary -->
                     <div class="col-lg-5">
-                        <div class="summary-card sticky-top">
+                        <div class="summary-card sticky-lg-top">
                             <h2 class="card-section-title">Összesítő</h2>
 
                             <div class="summary-row" v-for="item in cartItems" :key="item.id">
