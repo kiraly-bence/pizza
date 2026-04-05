@@ -1,21 +1,21 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\IngredientController as AdminIngredientController;
+use App\Http\Controllers\Admin\LabelController as AdminLabelController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\SettingController as AdminSettingController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\OrderController as AdminOrderController;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
-use App\Http\Controllers\Admin\ProductController as AdminProductController;
-use App\Http\Controllers\Admin\IngredientController as AdminIngredientController;
-use App\Http\Controllers\Admin\LabelController as AdminLabelController;
-use App\Http\Controllers\Admin\CouponController as AdminCouponController;
-use App\Http\Controllers\Admin\SettingController as AdminSettingController;
-use App\Http\Controllers\CouponController;
 use Illuminate\Support\Facades\Route;
 
 // Főoldal
@@ -23,8 +23,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Auth
 Route::post('/register', [AuthController::class, 'register'])->name('register');
-Route::post('/login',    [AuthController::class, 'login'])->name('login');
-Route::post('/logout',   [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Password reset
 Route::post('/forgot-password', [PasswordResetController::class, 'sendLink'])->name('password.email');
@@ -51,6 +51,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/rendeleseim', [OrderController::class, 'myOrders'])->name('orders.my');
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profil/cim', [ProfileController::class, 'updateAddress'])->name('profile.address');
+    Route::post('/profil/adatok', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profil/jelszo', [ProfileController::class, 'updatePassword'])->name('profile.password');
 });
 
 // Admin
@@ -102,9 +104,9 @@ Route::prefix('admin')
         Route::patch('/coupons/{coupon}/toggle', [AdminCouponController::class, 'toggle'])->name('coupons.toggle');
 
         // Settings
-        Route::get('/settings',         [AdminSettingController::class, 'index'])->name('settings.index');
-        Route::post('/settings',        [AdminSettingController::class, 'update'])->name('settings.update');
-        Route::post('/settings/hours',   [AdminSettingController::class, 'updateHours'])->name('settings.hours');
-        Route::post('/settings/pause',   [AdminSettingController::class, 'togglePause'])->name('settings.pause');
+        Route::get('/settings', [AdminSettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [AdminSettingController::class, 'update'])->name('settings.update');
+        Route::post('/settings/hours', [AdminSettingController::class, 'updateHours'])->name('settings.hours');
+        Route::post('/settings/pause', [AdminSettingController::class, 'togglePause'])->name('settings.pause');
         Route::post('/settings/contact', [AdminSettingController::class, 'updateContact'])->name('settings.contact');
     });

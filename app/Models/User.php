@@ -16,6 +16,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'email_verified_at',
         'password',
         'role',
         'banned_at',
@@ -32,9 +33,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'banned_at'         => 'datetime',
-        'password'          => 'hashed',
-        'role'              => UserRole::class,
+        'banned_at' => 'datetime',
+        'password' => 'hashed',
+        'role' => UserRole::class,
     ];
 
     public function orders(): HasMany
