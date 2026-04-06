@@ -19,7 +19,6 @@ class ProfileController extends Controller
         $user = auth()->user();
 
         return Inertia::render('Profile', [
-            'auth' => ['user' => $user],
             'savedAddress' => [
                 'zip' => $user->zip,
                 'city' => $user->city,

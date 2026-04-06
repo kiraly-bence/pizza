@@ -18,16 +18,15 @@ class DashboardController extends Controller
     public function index(): Response
     {
         return Inertia::render('Admin/Dashboard', [
-            'auth'  => ['user' => auth()->user()],
             'stats' => [
-                'orders'      => Order::count(),
-                'revenue'     => (int) Order::where('status', '!=', OrderStatus::Cancelled)->sum('total'),
-                'users'       => User::count(),
-                'products'    => Product::count(),
-                'categories'  => Category::count(),
+                'orders' => Order::count(),
+                'revenue' => (int) Order::where('status', '!=', OrderStatus::Cancelled)->sum('total'),
+                'users' => User::count(),
+                'products' => Product::count(),
+                'categories' => Category::count(),
                 'ingredients' => Ingredient::count(),
-                'labels'      => Label::count(),
-                'pending'     => Order::where('status', OrderStatus::Pending)->count(),
+                'labels' => Label::count(),
+                'pending' => Order::where('status', OrderStatus::Pending)->count(),
             ],
         ]);
     }

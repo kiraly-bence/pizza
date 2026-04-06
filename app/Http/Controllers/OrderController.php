@@ -19,37 +19,33 @@ class OrderController extends Controller
         $user = auth()->user();
 
         return Inertia::render('Checkout', [
-            'auth'         => ['user' => $user],
             'savedAddress' => [
-                'zip'    => $user->zip,
-                'city'   => $user->city,
+                'zip' => $user->zip,
+                'city' => $user->city,
                 'street' => $user->street,
-                'note'   => $user->note,
+                'note' => $user->note,
             ],
             'deliveryFee' => $this->orderService->deliveryFee(),
-            'serviceFee'  => $this->orderService->serviceFee(),
+            'serviceFee' => $this->orderService->serviceFee(),
         ]);
     }
 
     public function myOrders(): Response
     {
-        $user = auth()->user();
-
         return Inertia::render('Orders', [
-            'auth'   => ['user' => $user],
-            'orders' => $this->orderService->forUser($user),
+            'orders' => $this->orderService->forUser(auth()->user()),
         ]);
     }
 
     public function store(PlaceOrderRequest $request, SettingService $settingService): RedirectResponse
     {
-        if (!auth()->user()->hasVerifiedEmail()) {
+        if (! auth()->user()->hasVerifiedEmail()) {
             throw ValidationException::withMessages([
                 'store' => 'A rendelés leadásához előbb erősítsd meg az e-mail címedet.',
             ]);
         }
 
-        if (!$settingService->isOpen()) {
+        if (! $settingService->isOpen()) {
             throw ValidationException::withMessages([
                 'store' => 'Az étterem jelenleg nem fogad rendeléseket.',
             ]);

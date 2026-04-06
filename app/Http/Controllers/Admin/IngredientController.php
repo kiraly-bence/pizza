@@ -6,35 +6,36 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SaveIngredientRequest;
 use App\Models\Ingredient;
 use App\Services\Admin\IngredientService;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class IngredientController extends Controller
 {
     public function __construct(private readonly IngredientService $ingredientService) {}
 
-    public function index(): \Inertia\Response
+    public function index(): Response
     {
         return Inertia::render('Admin/Ingredients', [
-            'auth'        => ['user' => auth()->user()],
             'ingredients' => $this->ingredientService->all(),
         ]);
     }
 
-    public function store(SaveIngredientRequest $request): \Illuminate\Http\RedirectResponse
+    public function store(SaveIngredientRequest $request): RedirectResponse
     {
         $this->ingredientService->create($request->validated());
 
         return back();
     }
 
-    public function update(SaveIngredientRequest $request, Ingredient $ingredient): \Illuminate\Http\RedirectResponse
+    public function update(SaveIngredientRequest $request, Ingredient $ingredient): RedirectResponse
     {
         $this->ingredientService->update($ingredient, $request->validated());
 
         return back();
     }
 
-    public function destroy(Ingredient $ingredient): \Illuminate\Http\RedirectResponse
+    public function destroy(Ingredient $ingredient): RedirectResponse
     {
         $this->ingredientService->delete($ingredient);
 

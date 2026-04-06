@@ -6,21 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateUserRoleRequest;
 use App\Models\User;
 use App\Services\Admin\UserService;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class UserController extends Controller
 {
     public function __construct(private readonly UserService $userService) {}
 
-    public function index(): \Inertia\Response
+    public function index(): Response
     {
         return Inertia::render('Admin/Users', [
-            'auth'  => ['user' => auth()->user()],
             'users' => $this->userService->all(),
         ]);
     }
 
-    public function updateRole(UpdateUserRoleRequest $request, User $user): \Illuminate\Http\RedirectResponse
+    public function updateRole(UpdateUserRoleRequest $request, User $user): RedirectResponse
     {
         try {
             $this->userService->updateRole($user, $request->validated('role'), auth()->id());
@@ -31,7 +32,7 @@ class UserController extends Controller
         return back();
     }
 
-    public function ban(User $user): \Illuminate\Http\RedirectResponse
+    public function ban(User $user): RedirectResponse
     {
         try {
             $this->userService->ban($user, auth()->id());
@@ -42,7 +43,7 @@ class UserController extends Controller
         return back();
     }
 
-    public function unban(User $user): \Illuminate\Http\RedirectResponse
+    public function unban(User $user): RedirectResponse
     {
         $this->userService->unban($user);
 

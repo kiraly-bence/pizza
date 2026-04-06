@@ -13,7 +13,7 @@ class HomeController extends Controller
         $categories = Category::query()
             ->orderBy('sort_order')
             ->with([
-                'products' => fn($q) => $q
+                'products' => fn ($q) => $q
                     ->where('is_available', true)
                     ->orderBy('sort_order')
                     ->with(['ingredients', 'labels']),
@@ -22,13 +22,12 @@ class HomeController extends Controller
             ->each(function ($category) {
                 $category->products->each(function ($product) {
                     if ($product->image) {
-                        $product->image = '/storage/' . $product->image;
+                        $product->image = '/storage/'.$product->image;
                     }
                 });
             });
 
         return Inertia::render('Home', [
-            'auth'       => ['user' => auth()->user()],
             'categories' => $categories,
         ]);
     }
