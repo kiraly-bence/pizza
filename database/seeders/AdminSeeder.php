@@ -11,10 +11,11 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name'     => 'Admin',
-            'email'    => 'admin@csepelpizza.hu',
+            'name' => 'Admin',
+            'email' => 'admin@csepelpizza.hu',
             'password' => Hash::make('password'),
-            'role'     => 'admin',
+            'role' => 'admin',
+            'email_verified_at' => now(),
         ]);
     }
 }
