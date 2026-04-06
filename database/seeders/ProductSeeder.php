@@ -253,10 +253,10 @@ class ProductSeeder extends Seeder
 
         // ── Italok ───────────────────────────────────────────────────────────
         $drinks = [
-            ['name' => 'Coca-Cola 0.5L',               'image' => 'products/coca-cola.png',          'price' => 590, 'sort_order' => 1],
+            ['name' => 'Coca-Cola 0.5L',               'image' => 'products/coca-cola.png',           'price' => 590, 'sort_order' => 1],
             ['name' => 'Sprite 0.5L',                  'image' => 'products/sprite.png',              'price' => 590, 'sort_order' => 2],
             ['name' => 'Cappy 0.5L',                   'image' => 'products/cappy.png',               'price' => 590, 'sort_order' => 3],
-            ['name' => 'Ice Tea 0.5L',                 'image' => 'products/ice-tea.png',             'price' => 590, 'sort_order' => 4],
+            ['name' => 'Lipton 0.5L',                  'image' => 'products/ice-tea.png',             'price' => 590, 'sort_order' => 4],
             ['name' => 'NaturAqua Szénsavmentes 0.5L', 'image' => 'products/naturaqua-still.png',     'price' => 390, 'sort_order' => 5],
         ];
 
