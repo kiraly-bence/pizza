@@ -258,7 +258,6 @@ class ProductSeeder extends Seeder
             ['name' => 'Cappy 0.5L',                   'image' => 'products/cappy.png',               'price' => 590, 'sort_order' => 3],
             ['name' => 'Ice Tea 0.5L',                 'image' => 'products/ice-tea.png',             'price' => 590, 'sort_order' => 4],
             ['name' => 'NaturAqua Szénsavmentes 0.5L', 'image' => 'products/naturaqua-still.png',     'price' => 390, 'sort_order' => 5],
-            ['name' => 'NaturAqua Szénsavas 0.5L',     'image' => 'products/naturaqua-sparkling.png', 'price' => 390, 'sort_order' => 6],
         ];
 
         foreach ($drinks as $data) {
