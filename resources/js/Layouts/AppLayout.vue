@@ -363,18 +363,14 @@ import { Modal } from 'bootstrap'
 import { useCart } from '@/composables/useCart'
 import { useFormatting } from '@/composables/useFormatting'
 
-const props = defineProps({
-    auth: {
-        type: Object,
-        default: () => ({ user: null })
-    }
-})
+defineProps({})
 
 const page       = usePage()
+const auth       = computed(() => page.props.auth ?? { user: null })
 const restaurant = computed(() => page.props.restaurant)
 
 const showVerifyBanner = computed(() =>
-    props.auth?.user && !props.auth.user.email_verified_at
+    auth.value?.user && !auth.value.user.email_verified_at
 )
 const resending  = ref(false)
 const resendDone = ref(false)
@@ -409,7 +405,7 @@ const switchTab = (tab) => {
 }
 
 const initials = computed(() =>
-    (props.auth?.user?.name ?? '')
+    (auth.value?.user?.name ?? '')
         .split(' ')
         .map(n => n[0])
         .join('')
