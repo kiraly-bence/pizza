@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\CheckBanned;
+use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,20 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
-            \App\Http\Middleware\HandleInertiaRequests::class,
-        ]);
-    })
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->web(append: [
-            \App\Http\Middleware\HandleInertiaRequests::class,
-        ]);
-    
-        $middleware->alias([
-            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            HandleInertiaRequests::class,
+            CheckBanned::class,
         ]);
 
-        $middleware->web(append: [
-            \App\Http\Middleware\CheckBanned::class,
+        $middleware->alias([
+            'admin' => AdminMiddleware::class,
         ]);
 
         $middleware->redirectGuestsTo('/');
