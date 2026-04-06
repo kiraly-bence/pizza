@@ -2,7 +2,7 @@
     <AdminLayout :auth="auth" title="Címkék">
         <div class="admin-card">
             <div class="table-top">
-                <button class="btn-primary" @click="openCreate">+ Új label</button>
+                <button class="btn-primary" @click="openCreate">+ Új címke</button>
             </div>
             <table class="admin-table">
                 <thead>
@@ -30,7 +30,7 @@
                         </td>
                     </tr>
                     <tr v-if="labels.length === 0">
-                        <td colspan="5" class="text-center text-muted py-4">Nincsenek labelek.</td>
+                        <td colspan="5" class="text-center text-muted py-4">Nincsenek címkék.</td>
                     </tr>
                 </tbody>
             </table>
@@ -38,7 +38,7 @@
 
         <div class="modal-overlay" v-if="modal" @click.self="modal = false">
             <div class="modal-box">
-                <p class="modal-title">{{ editing ? 'Label szerkesztése' : 'Új label' }}</p>
+                <p class="modal-title">{{ editing ? 'Címke szerkesztése' : 'Új címke' }}</p>
                 <div class="mb-3">
                     <label class="form-label">Név</label>
                     <input v-model="form.name" class="form-control" placeholder="pl. Vegetáriánus">
@@ -93,7 +93,7 @@ const save = () => {
 }
 
 const destroy = (id) => {
-    if (!confirm('Biztosan törlöd ezt a labelt?')) return
+    if (!confirm('Biztosan törlöd ezt a címkét?')) return
     router.delete(`/admin/labels/${id}`, { preserveScroll: true })
 }
 </script>
