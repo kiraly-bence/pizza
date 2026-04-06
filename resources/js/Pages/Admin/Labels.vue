@@ -47,8 +47,8 @@
                 <div class="mb-4">
                     <label class="form-label">Típus</label>
                     <select v-model="form.type" class="form-select">
-                        <option value="primary">Elsődleges (badge a képen)</option>
-                        <option value="secondary">Másodlagos (tag a kártyán)</option>
+                        <option value="primary">Elsődleges (címke a képen)</option>
+                        <option value="secondary">Másodlagos (címke a leírásban)</option>
                     </select>
                 </div>
                 <div class="d-flex gap-2 justify-end">
