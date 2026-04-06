@@ -87,7 +87,7 @@ const csrf = computed(() =>
 )
 
 const initials = computed(() =>
-    props.auth.user.name
+    (props.auth?.user?.name ?? '')
         .split(' ')
         .map(n => n[0])
         .join('')
