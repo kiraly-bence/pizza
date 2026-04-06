@@ -408,15 +408,14 @@ const switchTab = (tab) => {
     registerForm.clearErrors()
 }
 
-const initials = computed(() => {
-    if (!props.auth?.user) return ''
-    return props.auth.user.name
+const initials = computed(() =>
+    (props.auth?.user?.name ?? '')
         .split(' ')
         .map(n => n[0])
         .join('')
         .toUpperCase()
         .slice(0, 2)
-})
+)
 
 // Login
 const loginForm = useForm({
