@@ -156,7 +156,7 @@
                                         placeholder="3. emelet, 12. ajtó"
                                     >
                                 </div>
-                                <div class="col-12 mt-1">
+                                <div class="col-12">
                                     <button
                                         class="btn save-btn"
                                         :disabled="addressForm.processing"
