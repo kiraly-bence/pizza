@@ -21,10 +21,10 @@ class Coupon extends Model
     ];
 
     protected $casts = [
-        'discount_type'  => DiscountType::class,
+        'discount_type' => DiscountType::class,
         'discount_value' => 'integer',
-        'expires_at'     => 'datetime',
-        'is_active'      => 'boolean',
+        'expires_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     public function usages(): HasMany
@@ -34,7 +34,7 @@ class Coupon extends Model
 
     public function isValidForUser(int $userId): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 
@@ -42,7 +42,7 @@ class Coupon extends Model
             return false;
         }
 
-        if ($this->max_uses_per_user !== null) {
+        if ($this->max_uses_per_user) {
             $userUsages = $this->usages()->where('user_id', $userId)->count();
             if ($userUsages >= $this->max_uses_per_user) {
                 return false;
