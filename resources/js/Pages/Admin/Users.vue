@@ -22,18 +22,15 @@
                             <td class="text-muted">{{ user.email }}</td>
                             <td>
                                 <select
-                                    v-if="user.id !== auth.user.id"
                                     class="role-select"
                                     :class="user.role === 'admin' ? 'role-admin' : 'role-user'"
                                     :value="user.role"
+                                    :disabled="user.id === auth.user.id"
                                     @change="setRole(user.id, $event.target.value)"
                                 >
                                     <option value="user">Felhasználó</option>
                                     <option value="admin">Admin</option>
                                 </select>
-                                <span v-else class="badge" :class="user.role === 'admin' ? 'badge-admin' : 'badge-user'">
-                                    {{ user.role === 'admin' ? 'Admin' : 'Felhasználó' }}
-                                </span>
                             </td>
                             <td>
                                 <span v-if="user.banned_at" class="badge badge-banned" :title="'Letiltva: ' + user.banned_at">
