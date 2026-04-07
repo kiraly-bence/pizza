@@ -436,7 +436,9 @@ const registerForm = useForm({
 })
 
 const submitRegister = () => {
-    registerForm.post('/register')
+    registerForm.post('/register', {
+        onSuccess: () => getAuthModal().hide(),
+    })
 }
 
 // Cart
