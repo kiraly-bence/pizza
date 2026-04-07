@@ -542,9 +542,15 @@ const logout = () => {
     transition: border-color 0.2s;
 }
 
-.user-btn:hover {
+.user-btn:hover,
+.user-btn:active,
+.user-btn:focus,
+.user-btn.show,
+.user-btn[aria-expanded="true"] {
+    background: transparent !important;
     border-color: rgba(255,255,255,0.5);
-    color: #fff;
+    color: #fff !important;
+    box-shadow: none;
 }
 
 .user-avatar {
