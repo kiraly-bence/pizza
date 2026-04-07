@@ -21,7 +21,17 @@
                             <td class="fw-semibold">{{ user.name }}</td>
                             <td class="text-muted">{{ user.email }}</td>
                             <td>
-                                <span class="badge" :class="user.role === 'admin' ? 'badge-admin' : 'badge-user'">
+                                <select
+                                    v-if="user.id !== auth.user.id"
+                                    class="role-select"
+                                    :class="user.role === 'admin' ? 'role-admin' : 'role-user'"
+                                    :value="user.role"
+                                    @change="setRole(user.id, $event.target.value)"
+                                >
+                                    <option value="user">Felhasználó</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                                <span v-else class="badge" :class="user.role === 'admin' ? 'badge-admin' : 'badge-user'">
                                     {{ user.role === 'admin' ? 'Admin' : 'Felhasználó' }}
                                 </span>
                             </td>
@@ -38,18 +48,6 @@
                                 <span v-if="user.id === auth.user.id" class="text-muted small">Te vagy</span>
 
                                 <template v-else>
-                                    <!-- Role toggle (only for non-banned non-self) -->
-                                    <button
-                                        v-if="user.role !== 'admin' && !user.banned_at"
-                                        class="btn-edit"
-                                        @click="setRole(user.id, 'admin')"
-                                    >Admin legyen</button>
-                                    <button
-                                        v-else-if="user.role === 'admin'"
-                                        class="btn-delete"
-                                        @click="setRole(user.id, 'user')"
-                                    >Admin elvétel</button>
-
                                     <!-- Ban / Unban (only for non-admins) -->
                                     <button
                                         v-if="user.role !== 'admin' && !user.banned_at"
@@ -112,6 +110,20 @@ const unban = (id) => {
 
 .badge-admin  { background: #fef3c7; color: #92400e; }
 .badge-user   { background: #e0e7ff; color: #3730a3; }
+
+.role-select {
+    border: none;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    cursor: pointer;
+    appearance: none;
+    text-align: center;
+}
+
+.role-admin { background: #fef3c7; color: #92400e; }
+.role-user  { background: #e0e7ff; color: #3730a3; }
 .badge-active { background: #d1fae5; color: #065f46; }
 .badge-banned { background: #fee2e2; color: #991b1b; }
 
