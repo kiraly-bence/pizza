@@ -113,10 +113,10 @@ const unban = (id) => {
 
 .role-select {
     border: none;
-    border-radius: 20px;
+    border-radius: 999px;
     font-size: 0.75rem;
-    font-weight: 700;
-    padding: 3px 10px;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
     cursor: pointer;
     appearance: none;
     text-align: center;
